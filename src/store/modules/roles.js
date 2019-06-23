@@ -13,7 +13,6 @@ const actions = {
                     // { headers: { 'Authorization': 'Bearer '+ token }}
                 )
                 state.roles = response.data;
-                console.log(response.data);
             }
             catch(err) {
                 throw(err);
