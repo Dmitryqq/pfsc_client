@@ -6,7 +6,7 @@
             </tr>
             <tr v-for="role in roles" :key="role.id">
                 <td>{{ role.id }}</td>
-                <td><input type="text" id="textField" v-model="role.role_name"></td>
+                <td><input type="text" id="textField" v-model="role.roleName"></td>
             </tr>
         </table>
 </template>
@@ -17,13 +17,7 @@ export default {
         return {        
             isLoading: false,
             success: null,
-            error: null,
-            delMode: false,
-            editMode: false,
-            role:{
-                id: '',
-                name: ''
-            }
+            error: null
         }
     },
     computed:{
@@ -32,12 +26,12 @@ export default {
         }
     },
     created(){
-        this.getroles()
+        this.getRoles()
     },
     methods: {
-        getroles () {
+        getRoles () {
             this.isLoading = true;
-            this.$store.dispatch('roles/getroles')
+            this.$store.dispatch('roles/getRoles')
             .then(()=>{
                 this.isLoading = false; 
             })
