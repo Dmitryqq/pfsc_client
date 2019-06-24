@@ -15,8 +15,8 @@ export default {
 :root {
   --pr-color: #007dc6; 
   --sc-color: #98cc0a;
-  --main-bg-color: #fff;
-  --nav-bg-color: #f8f9fa;
+  --pr-bg-color: #fff;
+  --sc-bg-color: #f8f9fa;
 }
 
 #app {
@@ -26,6 +26,6 @@ export default {
   color: #000;
   margin:0;
   padding:0;
-  background: var(--main-bg-color);
+  background: var(--pr-bg-color);
 }
 </style>

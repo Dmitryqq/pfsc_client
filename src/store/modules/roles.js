@@ -8,9 +8,9 @@ const actions = {
     async getroles({state,rootState}){
         if(state.roles.length<1) {
             try{
-                // const token = localStorage.getItem('token')
+                const token = localStorage.getItem('token')
                 const response = await axios.get(rootState.apiPrefix + '/role', 
-                    // { headers: { 'Authorization': 'Bearer '+ token }}
+                    { headers: { 'Authorization': 'Bearer '+ token }}
                 )
                 state.roles = response.data;
             }

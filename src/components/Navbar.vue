@@ -18,7 +18,7 @@
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Павел
+                            {{username}}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                             <router-link to="/" class="dropdown-item">Настройки</router-link>
@@ -39,6 +39,14 @@ export default {
     name: 'Navbar',
     components:{
         SearchForm
+    },
+    computed: {
+        username() {
+            return this.$store.state.users.user.name;
+        }
+    },
+    mounted(){
+        this.$store.dispatch('users/decodeUser');
     }
 }
 </script>
@@ -55,7 +63,7 @@ export default {
     margin-right:20px !important;
 }
 .bd-navbar{
-    background: var(--nav-bg-color);
+    background: var(--sc-bg-color);
     border-bottom: 1px solid rgba(0,0,0,.1);
 }
 </style>
