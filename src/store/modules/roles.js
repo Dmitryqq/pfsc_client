@@ -10,7 +10,7 @@ const actions = {
             try{
                 const token = localStorage.getItem('token')
                 const response = await axios.get(rootState.apiPrefix + '/role', 
-                    { headers: { 'Pragma': token }}
+                    { headers: { 'Authorization': 'Bearer '+ token }}
                 )
                 state.roles = response.data;
             }

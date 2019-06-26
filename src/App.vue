@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="container"><router-view></router-view></div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -12,12 +12,20 @@ export default {
 </script>
 
 <style>
+:root {
+  --pr-color: #007dc6; 
+  --sc-color: #98cc0a;
+  --pr-bg-color: #fff;
+  --sc-bg-color: #f8f9fa;
+}
+
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  color: #000;
+  margin:0;
+  padding:0;
+  background: var(--pr-bg-color);
 }
 </style>
