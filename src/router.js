@@ -23,13 +23,21 @@ const router = new Router({
       {
         path: '/roles',
         name: 'roles',
-        component: () => import('./views/RolesShow.vue')
+        component: () => import('./views/RolesShow.vue'),
+        meta: {requiresAuth: true}
       },
       
       {
         path: '/users',
         name: 'users',
-        component: () => import('./views/UsersShow.vue')
+        component: () => import('./views/UsersShow.vue'),
+        meta: {requiresAuth: true}
+      },
+      {
+        path: '/commit/:id',
+        name: 'commit',
+        component: () => import('./views/Commit.vue'),
+        meta: {requiresAuth: true}
       }
     ]
   })

@@ -10,7 +10,7 @@ const actions ={
     async authUser({rootState, dispatch}, authData){
         try{
             const response = await axios.post(rootState.apiPrefix + `/login`, authData)
-            let token = response.headers.authorization;
+            let token = response.headers['authorization'];
             if (token) {
                 localStorage.setItem('token', token);    
                 dispatch("decodeUser");       
