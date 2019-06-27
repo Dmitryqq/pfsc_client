@@ -33,6 +33,10 @@ export default {
     mounted(){
         if(this.commits.length<1)
             this.getCommits();
+    },
+    beforeRouteLeave (to, from, next) {
+        this.$store.dispatch('commits/clearCommits');
+        next();
     }
 }
 </script>

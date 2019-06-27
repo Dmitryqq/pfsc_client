@@ -3,9 +3,9 @@ import axios from 'axios'
 const state = {
     commits: [],
     statuses: [
-        { name : 'В ожидании', value: null, color:"badge-primary" },
-        { name : 'Принят', value: true, color:"badge-success" },
-        { name : 'Отклонен', value: false, color:"badge-danger" }
+        { name : 'в ожидании', color:"badge-primary" },
+        { name : 'принят', color:"badge-success" },
+        { name : 'отклонен', color:"badge-danger" }
     ]
 }
 
@@ -45,12 +45,18 @@ const actions = {
         catch(err) {
             throw(err);
         }
+    },
+    async clearCommits({commit}){
+        commit('clearCommits');
     }
 }
 
 const mutations = {
     setCommits(state, commits) {
         state.commits = commits
+    },
+    clearCommits(state) {
+        state.commits = [];
     }
 }
 

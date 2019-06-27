@@ -2,10 +2,10 @@
     <nav class="navbar navbar-expand-sm navbar-light bd-navbar">
         <div class="container">
 
-            <router-link to="/" class="navbar-brand">
+            <a href="/" class="navbar-brand">
                 <img alt="Vue logo" src="../assets/logo.png"  height="30" class="d-inline-block align-top">
                 <span>Банк Компаньон</span>
-            </router-link>
+            </a>
 
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

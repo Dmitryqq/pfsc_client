@@ -2,7 +2,7 @@
     <div class="commit">
         <Navbar/>
         <div class="col-md-7 mx-auto my-5">
-            <table class="table table-sm ">
+            <table class="table table-sm " v-if="commit.mark">
                 <tr>
                     <th>Имя пользователя</th>
                     <td>{{commit.userName}}</td>
@@ -21,12 +21,12 @@
                         <!-- <select class="form-control form-control-sm col-6">
                             <option>1</option>
                         </select> -->
-                        <span class="badge badge-secondary">{{commit.mark.name}}</span>
+                        <span class="badge badge-secondary">{{commit.mark.name || " "}}</span>
                     </td>
                 </tr>
                 <tr>
                     <th>Статус</th>
-                    <td><span class="badge" :class="getStatus(commit.accepted).color">{{getStatus(commit.accepted).name}}</span></td>
+                    <td><span class="badge" :class="getStatus(commit.status).color">{{getStatus(commit.status).name}}</span></td>
                 </tr>
             </table>
             <div class="card my-2" v-for="fileType in commit.fileTypes" :key="fileType.id">
@@ -40,6 +40,7 @@
                     <table class="table table-sm table-borderless" style="margin-bottom:0">
                         <tr v-for="file in fileType.files" :key="file.id">
                             <td>{{getFileName(file.path)}}</td>
+                            <td class="text-secondary" style="font-size:.8rem;vertical-align:middle">{{file.createDate}}</td>
                             <td>
                                 <span class="icon-btn">
                                     <i class="fas fa-trash"></i>
@@ -74,12 +75,12 @@ export default {
         },
         getStatus(status){
             const i = this.statuses.findIndex(s=>{
-                return s.value == status;
+                return s.name == status;
             })
             if(i>=0)
                 return this.statuses[i];
             else 
-                return null;
+                return this.statuses[0];
         },
         getFileName(path){
             var name = path.split('\\');
