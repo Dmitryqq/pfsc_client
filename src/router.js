@@ -24,6 +24,12 @@ const router = new Router({
         path: '/roles',
         name: 'roles',
         component: () => import('./views/RolesShow.vue')
+      },
+      
+      {
+        path: '/users',
+        name: 'users',
+        component: () => import('./views/UsersShow.vue')
       }
     ]
   })

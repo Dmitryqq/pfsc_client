@@ -1,4 +1,6 @@
 <template>
+    <div class="home">
+        <Navbar/>
         <table border="1" class="showtable">
             <tr>
                 <td><b>№</b></td>
@@ -41,10 +43,15 @@
                 <button type="button" @click="addUser">Добавить</button>
             </tr>
         </table>
+    </div>
 </template>
 
 <script>
+import Navbar from '@/components/Navbar.vue'
 export default {
+    components: {
+        Navbar
+    },
     data: function(){
         return {
             user:{
