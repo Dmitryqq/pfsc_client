@@ -12,16 +12,29 @@ const actions ={
             const response = await axios.post(rootState.apiPrefix + `/login`, authData)
             let token = response.headers['authorization'];
             if (token) {
-                localStorage.setItem('token', token);    
-                dispatch("decodeUser");       
+                const dtoken = jwtDecode(token);
+                if(dtoken.enabled == true){
+                    localStorage.setItem('token', token);    
+                    dispatch("decodeUser");
+                }
+                else{
+                    throw new Error("Учетная запись деактивирована")
+                }
             } else {
                 throw new Error("Неверный логин или пароль")
             }
         }
         catch(err) {
             localStorage.removeItem('token');
-            if(err.response.status == "403")    //Ругается что не знает что такое статус
-                throw new Error("Неверный логин или пароль")
+            var exists = true;
+            try {
+                if (err.response.status)
+                    exists = true;
+            } catch(e) { exists = false; }
+            if(exists){
+                if(err.response.status == "403")
+                    throw new Error("Неверный логин или пароль")
+            }
             else
                 throw(err);
         }
@@ -33,26 +46,6 @@ const actions ={
             commit("setUser",{sub:dtoken.sub, id:dtoken.id, role: dtoken.role, name: dtoken.name}); 
         } 
     },
-    // async Authorization({rootState}, input){
-    //     try{
-    //         let token = null;
-    //         await axios.post(rootState.apiPrefix + '/login', input,{
-    //                 headers:{'Content-Type': 'application/json'}})
-    //             .then(function (response) {
-    //                 token = response.headers.Authorization;
-    //                 console.log(token);
-    //                 })
-    //         if (token) {
-    //             localStorage.setItem('token', token);
-    //         } else {
-    //             localStorage.removeItem('token');  
-    //             throw new Error('Неверный логин или пароль!')
-    //         }
-    //     }
-    //     catch(err){
-    //         throw(err);
-    //     }
-    // },
     logout(){
          localStorage.removeItem('token');
     },

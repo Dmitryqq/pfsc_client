@@ -1,17 +1,16 @@
 <template>
     <div class="users">
         <Navbar/>
-        <Menu/>
         <div class="col-md-7 mx-auto my-5">
             <table class="table table-sm">
                 <tr>
                     <td><b>№</b></td>
-                    <td><b>Логин</b></td>
-                    <td><b>Пароль</b></td>
-                    <td><b>Имя</b></td>
-                    <td><b>Email</b></td>
-                    <td><b>Активен</b></td>
-                    <td><b>Роль</b></td>
+                    <td><b>Название</b></td>
+                    <td><b>Макс.размер</b></td>
+                    <td><b>Обяз.</b></td>
+                    <td><b>Типы</b></td>
+                    <td><b>Макс.кол-во</b></td>
+                    <td><b>EAA</b></td>  <!-- Не знаю как назвать -->
                     <td></td>
                     <td></td>
                     <td></td>
@@ -60,12 +59,9 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue'
-import Menu from '../components/Menu.vue'
-
 export default {
     components: {
-        Navbar,
-        Menu
+        Navbar
     },
     data: function(){
         return {
@@ -156,37 +152,5 @@ export default {
 </script>
 
 <style scoped>
-.users{
-    width: 100%; 
-    height: 500px;
-    display: block;
-    overflow: auto;
-    font-size: 12pt;
-}
-table{
-    width: 100%;
-    border-collapse: collapse;
-    overflow-x: auto;
-}
-thead tr{
-    font-weight: bold;
-}
-td:nth-child(1){
-    width: 1%;
-}
-td:nth-child(2){
-    width: 20%;
-}
-td:nth-child(3){
-    width: 30%;
-}
-td:nth-child(4){
-    width: 50%;
-}
-p {
-    padding: 0  0 10px 0.75em;
-}
-.form-control-sm {
-    padding: 0 px;
-}
+
 </style>

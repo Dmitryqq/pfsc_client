@@ -21,7 +21,7 @@
                             {{username}}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                            <router-link to="/" class="dropdown-item">Настройки</router-link>
+                            <router-link to="/dashboard" class="dropdown-item">Настройки</router-link>
                             <a href="" class="dropdown-item" @click="logout">Выйти</a>
                         </div>
                     </li>

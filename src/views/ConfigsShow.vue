@@ -1,6 +1,7 @@
 <template>
     <div class="configs">
         <Navbar/>
+        <Menu/>
         <div class="col-md-7 mx-auto my-5">
             <table class="table table-sm">
                 <tr>
@@ -37,9 +38,11 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue'
+import Menu from '../components/Menu.vue'
 export default {
     components: {
-        Navbar
+        Navbar,
+        Menu
     },
     data: function(){
         return {
@@ -109,4 +112,27 @@ export default {
 
 <style scoped>
 
+table{
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+}
+thead tr{
+    font-weight: bold;
+}
+td:nth-child(1){
+    width: 1%;
+}
+td:nth-child(2){
+    width: 20%;
+}
+td:nth-child(3){
+    width: 30%;
+}
+td:nth-child(4){
+    width: 50%;
+}
+p {
+    padding: 0  0 10px 0.75em;
+}
 </style>
