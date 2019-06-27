@@ -1,48 +1,59 @@
 <template>
-    <div class="home">
+    <div class="users">
         <Navbar/>
-        <table border="1" class="showtable">
-            <tr>
-                <td><b>№</b></td>
-                <td><b>Логин</b></td>
-                <td><b>Пароль</b></td>
-                <td><b>Имя</b></td>
-                <td><b>Email</b></td>
-                <td><b>Активен</b></td>
-                <td><b>Роль</b></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-            <tr v-for="user in users" :key="user.id">
-                <td>{{user.id}}</td>
-                <td>{{user.username}}</td>
-                <td>{{user.password}}</td>
-                <td>{{user.name}}</td>
-                <td>{{user.email}}</td>
-                <td>{{user.enabled}}</td>
-                <td>{{user.role.roleName}}</td>
-                <td></td>
-                <td><i class="material-icons">edit</i></td>
-                <td><i class="material-icons" @click="deleteUser(user.id)">delete</i></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><input type="text" v-model="user.username"></td>
-                <td><input type="password" v-model="user.password"></td>
-                <td><input type="text" name="Name" v-model="user.name"></td>
-                <td><input type="text" name="Email" v-model="user.email"></td>
-                <td><input type="checkbox" name="Enabled" v-model="user.enabled"></td>
-                <td><select class="form" v-model="user.role_id">
-                        <option disabled value="">Роль</option>
-                        <option v-for="role in roles" :key="role.id" :value="role.id">
-                            {{ role.roleName }}
-                        </option>
-                    </select>
+        <div class="col-md-7 mx-auto my-5">
+            <table class="table table-sm">
+                <tr>
+                    <td><b>№</b></td>
+                    <td><b>Логин</b></td>
+                    <td><b>Пароль</b></td>
+                    <td><b>Имя</b></td>
+                    <td><b>Email</b></td>
+                    <td><b>Активен</b></td>
+                    <td><b>Роль</b></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr v-for="user in users" :key="user.id">
+                    <td>{{user.id}}</td>
+                    <td>{{user.username}}</td>
+                    <!-- <td>{{user.password}}</td> -->
+                    <td>***</td>
+                    <td>{{user.name}}</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.enabled}}</td>
+                    <td>{{user.role.roleName}}</td>
+                    <!-- <td></td> -->
+                    <td>
+                        <!-- <i class="fas fa-trash"></i> -->
+                        <span class="icon-btn" >
+                            <i class="fas fa-user-edit" ></i>
+                            <i style="margin-left: 20px" class="fas fa-trash" @click="deleteUser(user.id)"></i>
+                        </span>
                     </td>
-                <button type="button" @click="addUser">Добавить</button>
-            </tr>
-        </table>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input class="form-control-sm" type="text" name = "username" v-model="user.username" required></td>
+                    <td><input class="form-control-sm" type="password" v-model="user.password"></td>
+                    <td><input class="form-control-sm" type="text" name="Name" v-model="user.name"></td>
+                    <td><input class="form-control-sm" type="text" name="Email" v-model="user.email"></td>
+                    <td><input class="form-control-sm" type="checkbox" name="Enabled" v-model="user.enabled"></td>
+                    <td>
+                        <div class="form-group">
+                        <select class="form-control-sm" v-model="user.roleId">
+                            <option disabled value="">Роль</option>
+                            <option v-for="role in roles" :key="role.id" :value="role.id">
+                                {{ role.roleName }}
+                            </option>
+                        </select>
+                        </div>
+                    </td>
+                    <button type="submit" class="btn btn-primary" @click="addUser">Добавить</button>
+                </tr>
+            </table>
+        </div>
     </div>
 </template>
 
@@ -60,7 +71,7 @@ export default {
                 name: '',
                 email: '',
                 enabled: '',
-                role_id: ''
+                roleId: ''
             },    
             isLoading: false,
             success: null,
@@ -104,9 +115,8 @@ export default {
         },
         addUser(){  
             this.error = null;
-            // console.log(this.user);
             if(this.user.username.length>0 && this.user.password.length>0 && this.user.name.length>0 && this.user.email.length>0
-            && this.user.role_id!=0 ) {
+            && this.user.roleId!=0 ) {
                     this.$store.dispatch('users/addUser',  this.user)
                     .then(()=>{ 
                     this.success = true;
@@ -117,7 +127,6 @@ export default {
                     this.error=err.message
                 })
             }
-            else console.log('Заполните пустые поля!');
         },
         deleteUser(id){
             this.$store.dispatch('users/deleteUser', id)
@@ -135,7 +144,7 @@ export default {
             this.user.password = '';
             this.user.name = '';
             this.user.email = '';
-            this.user.role_id = null;
+            this.user.roleId = null;
             this.user.enabled = false;
         }
     }

@@ -107,7 +107,24 @@ const actions ={
         catch(err){
             throw(err);
         }
-    }
+    },
+    async updateUser({commit,rootState}, user){
+        try{
+            const token = localStorage.getItem('token')
+            const response = await axios.put(rootState.apiPrefix + `/user/`, [user.id, user],
+                { headers: { 'Authorization': token }}
+            )
+            if(response.data.error)
+                throw new Error(response.data.error)
+            else {
+                commit('updateUser',response.data.updatedUser)
+                return response.data.message
+            }
+        }
+        catch(err){
+            throw(err);
+        }
+    },
 }
 
 const mutations = {
@@ -122,10 +139,10 @@ const mutations = {
             name: user.name,
             email: user.email,
             role: user.role,
-            role_id: user.role_id,
+            roleId: user.roleId,
             enabled: user.enabled,
-            create_date: user.create_date,
-            update_date: user.update_date
+            createDate: user.createDate,
+            updateDate: user.updateDate
         });
     },
     deleteUser(state, id){
@@ -133,6 +150,20 @@ const mutations = {
             return b.id == id
         })
         state.users.splice(i,1)
+    },
+    updateUser (state, user) {
+        const i = state.users.findIndex(b=>{
+            return b.id == user.id
+        })
+        state.users[i].username = user.username,
+        state.users[i].password = user.password,
+        state.users[i].name = user.name,
+        state.users[i].email = user.email,
+        state.users[i].role = user.role,
+        state.users[i].roleId = user.roleId,
+        state.users[i].enabled = user.enabled,
+        state.users[i].createDate = user.createDate,
+        state.users[i].updateDate = user.updateDate
     }
 }
 

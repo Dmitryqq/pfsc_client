@@ -26,11 +26,16 @@ const router = new Router({
         component: () => import('./views/RolesShow.vue'),
         meta: {requiresAuth: true}
       },
-      
       {
         path: '/users',
         name: 'users',
         component: () => import('./views/UsersShow.vue'),
+        meta: {requiresAuth: true}
+      },
+      {
+        path: '/configs',
+        name: 'configs',
+        component: () => import('./views/ConfigsShow.vue'),
         meta: {requiresAuth: true}
       },
       {
