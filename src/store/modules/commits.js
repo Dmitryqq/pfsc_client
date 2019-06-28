@@ -48,6 +48,52 @@ const actions = {
     },
     async clearCommits({commit}){
         commit('clearCommits');
+    },
+    async addCommit({commit,rootState},payload){
+        try{
+            const token = localStorage.getItem('token');
+            const response = await axios.post(rootState.apiPrefix + '/commit/', payload,
+                { headers: { 'Authorization': token }}
+            )
+            commit("addCommit",response.data);
+            return response.data.id;
+        }
+        catch(err) {
+            if(err.response.data)
+                throw(err.response.data);
+            else
+                throw(err)
+        }
+    },
+    async addFiles({rootState},formData){
+        try{
+            const token = localStorage.getItem('token');
+            const response = await axios.post(rootState.apiPrefix + '/file/', formData,
+                { headers: { 'Content-Type': 'multipart/form-data', 'Authorization': token }}
+            )
+            return response.data.length;
+
+        }
+        catch(err) {
+            if(err.response.data)
+                throw(err.response.data);
+            else
+                throw(err)
+        }
+    },
+    async deleteCommit({rootState},id){
+        try{
+            const token = localStorage.getItem('token');
+            await axios.delete(rootState.apiPrefix + '/commit/'+id, 
+                { headers: { 'Authorization': token }}
+            )
+        }
+        catch(err) {
+            if(err.response.data)
+                throw(err.response.data);
+            else
+                throw(err)
+        }
     }
 }
 
@@ -57,6 +103,9 @@ const mutations = {
     },
     clearCommits(state) {
         state.commits = [];
+    },
+    addCommit(state, commit){
+        state.commits.push(commit);
     }
 }
 

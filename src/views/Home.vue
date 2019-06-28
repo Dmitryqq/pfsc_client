@@ -2,6 +2,7 @@
     <div class="home">
         <Navbar/>
         <div class="container my-5">
+            <router-link to="/commit/new" class="btn btn-primary btn-sm add-btn">Добавить</router-link>
             <CommitsTable :dataSet="commits" @showCommit="clickListener"/>
         </div>
         
@@ -41,7 +42,9 @@ export default {
 }
 </script>
 <style>
-
+.add-btn{
+    margin-bottom: 20px;
+}
 </style>
 
 

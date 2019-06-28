@@ -28,4 +28,22 @@ export default {
   padding:0;
   background: var(--pr-bg-color);
 }
+
+.icon-btn{
+    float: right;
+    font-size: 1rem;
+}
+.icon-btn i{
+  opacity: .5;
+  cursor: pointer;
+}
+.icon-btn i:hover{
+    opacity: .8;
+}
+.icon-btn input[type="file"] {
+    display: none;
+}
+label.icon-btn{
+    margin: 0;
+}
 </style>

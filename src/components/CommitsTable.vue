@@ -16,11 +16,8 @@
                 </th>
                 </tr>
             </thead>
-            
+            <th colspan="6" v-if="!commits.length"><p class="text-secondary">Список пуст</p></th>
             <tbody>
-                <tr v-if="!commits.length">
-                    <td colspan="6"><p class="text-secondary">Список пуст</p></td>
-                </tr>
                 <tr v-for="commit in commits" :key="commit.id" @click="$emit('showCommit',commit.id)">
                     <td>{{commit.userName}}</td>
                     <td>{{commit.number}}</td>
@@ -108,6 +105,13 @@ i{
 p{
     text-align: center;
     padding-top: 100px;
+}
+
+tbody td:nth-child(3){
+    max-width: 200px;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 </style>

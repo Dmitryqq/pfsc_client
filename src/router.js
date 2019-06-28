@@ -27,6 +27,12 @@ const router = new Router({
         meta: {requiresAuth: true}
       },
       {
+        path: '/commit/new',
+        name: 'addCommit',
+        component: () => import('./views/CommitAdd.vue'),
+        meta: {requiresAuth: true}
+      },
+      {
         path: '/commit/:id',
         name: 'commit',
         component: () => import('./views/Commit.vue'),
@@ -56,13 +62,13 @@ const router = new Router({
     if(!to.meta.roles)                                        //если нет ограничения на роль пользователя
       return next()                                           //переход на страницу
     if(to.meta.roles.includes('admin')) {                     //если доступ только для администратора
-      if(dtoken.rules == "Admin")                                   //проверка роли
+      if(dtoken.role.name == "Admin")                                   //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
         return next({path: '/login'})                         //переадресация на страницу ошибки
     }
     if(to.meta.roles.includes('adminABD')) {                  //если доступ только для загрузчика
-      if(dtoken.rules == "Admin ABD" || dtoken.rules ==  "Admin")             //проверка роли
+      if(dtoken.role.name == "Admin ABD" || dtoken.role.name ==  "Admin")             //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
         return next({path: '/login'})                         //переадресация на страницу ошибки

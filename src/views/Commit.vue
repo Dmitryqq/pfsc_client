@@ -2,31 +2,28 @@
     <div class="commit">
         <Navbar/>
         <div class="col-md-7 mx-auto my-5">
-            <table class="table table-sm " v-if="commit.mark">
+            <table class="table table-sm ">
                 <tr>
                     <th>Имя пользователя</th>
                     <td>{{commit.userName}}</td>
                 </tr>
                 <tr>
-                    <th>Описание</th>
-                    <td>{{commit.description}}</td>
-                </tr>
-                <tr>
                     <th>Дата</th>
                     <td>{{commit.createDate}}</td>
                 </tr>
-                <tr>
+                <tr v-if="commit.mark">
                     <th>Метка</th>
                     <td>
-                        <!-- <select class="form-control form-control-sm col-6">
-                            <option>1</option>
-                        </select> -->
-                        <span class="badge badge-secondary">{{commit.mark.name || " "}}</span>
+                        <span class="badge badge-secondary">{{commit.mark.name}}</span>
                     </td>
                 </tr>
                 <tr>
                     <th>Статус</th>
                     <td><span class="badge" :class="getStatus(commit.status).color">{{getStatus(commit.status).name}}</span></td>
+                </tr>
+                <tr>
+                    <th>Описание</th>
+                    <td>{{commit.description}}</td>
                 </tr>
             </table>
             <div class="card my-2" v-for="fileType in commit.fileTypes" :key="fileType.id">
@@ -98,10 +95,7 @@ export default {
 }
 </script>
 <style>
-.icon-btn{
-    float: right;
-    opacity: .5;
-    font-size: 1rem;
-    cursor: pointer;
+.commit th{
+    min-width: 180px;
 }
 </style>
