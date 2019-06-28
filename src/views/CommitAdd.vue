@@ -90,7 +90,7 @@ export default {
                 return 0;
             })
         },
-        ...mapGetters('fileTypes',{
+        ...mapGetters('filetypes',{
             fileTypes: 'getUserFileTypes',
         })
     },
@@ -102,7 +102,7 @@ export default {
             })
         },
         getFileTypes(){
-            this.$store.dispatch('fileTypes/getFileTypes');
+            this.$store.dispatch('filetypes/getTypeOfFiles');
         },
         onFileChanged (event, id) {
             this.errors = [];

@@ -6,7 +6,6 @@ import commits from './modules/commits.js'
 import configs from './modules/configs.js'
 import filetypes from './modules/filetypes.js'
 import marks from './modules/marks.js'
-import fileTypes from './modules/fileTypes.js'
 
 Vue.use(Vuex)
 
@@ -17,8 +16,7 @@ export default new Vuex.Store({
     commits,
     configs,
     filetypes,
-    marks,
-    fileTypes
+    marks
   },
   state:{
       apiPrefix: 'http://localhost:8080'

@@ -109,9 +109,15 @@ const mutations = {
     }
 }
 
+const getters = {
+    getUserFileTypes: state => {
+        return state.typeOfFiles.filter(f=>f.role.roleName == 'User');
+    }
+}
 export default{
     namespaced: true,
     state,
     actions,
-    mutations
+    mutations,
+    getters
 }
