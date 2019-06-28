@@ -21,10 +21,36 @@ const router = new Router({
         component: () => import('./views/Login.vue')
       },
       {
-        path: '/roles',
-        name: 'roles',
-        component: () => import('./views/RolesShow.vue'),
-        meta: {requiresAuth: true}
+        path: '/dashboard',
+        name: 'dashboard',
+        component: () => import('./views/Dashboard.vue'),
+        redirect: '/dashboard/users',
+        meta: {requiresAuth: true},
+        children:[{
+          path: 'users',
+          name: 'users',
+          component: () => import('./views/UsersShow.vue'),
+          meta: {requiresAuth: true}
+        },
+        {
+          path: 'configs',
+          name: 'configs',
+          component: () => import('./views/ConfigsShow.vue'),
+          meta: {requiresAuth: true}
+        },
+        {
+          path: 'filetypes',
+          name: 'filetypes',
+          component: () => import('./views/TypeOfFilesShow.vue'),
+          meta: {requiresAuth: true}
+        },
+        {
+          path: 'roles',
+          name: 'roles',
+          component: () => import('./views/RolesShow.vue'),
+          meta: {requiresAuth: true}
+        },
+      ]
       },
       {
         path: '/commit/new',

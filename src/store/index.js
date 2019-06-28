@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import roles from './modules/roles.js'
 import users from './modules/users.js'
 import commits from './modules/commits.js'
+import configs from './modules/configs.js'
+import filetypes from './modules/filetypes.js'
 import marks from './modules/marks.js'
 import fileTypes from './modules/fileTypes.js'
 
@@ -13,6 +15,8 @@ export default new Vuex.Store({
     roles,
     users,
     commits,
+    configs,
+    filetypes,
     marks,
     fileTypes
   },
