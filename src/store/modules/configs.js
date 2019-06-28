@@ -12,7 +12,6 @@ const actions = {
                 const response = await axios.get(rootState.apiPrefix + '/config',
                     { headers: { 'Authorization': token }}
                 )
-                console.log(response.data);
                 state.configs = response.data;
             }
             catch(err) {
@@ -58,14 +57,14 @@ const actions = {
     async updateConfig({commit,rootState}, config){
         try{
             const token = localStorage.getItem('token')
-            const response = await axios.put(rootState.apiPrefix + `/config/`, [config.id, config],
+            const response = await axios.put(rootState.apiPrefix + `/config/` + config.id, config,
                 { headers: { 'Authorization': token }}
             )
             if(response.data.error)
                 throw new Error(response.data.error)
             else {
-                commit('updateConfig',response.data.updatedconfig)
-                return response.data.message
+                commit('updateConfig', response.data)
+                return true;
             }
         }
         catch(err){

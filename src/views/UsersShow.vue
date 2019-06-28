@@ -35,8 +35,8 @@
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td><input class="form-control-sm" type="text" name = "username" v-model="user.username" required></td>
+                    <td>{{defaultPassword}}</td>
+                    <td><input class="form-control-sm" type="text" name = "username" v-model="user.username"></td>
                     <td><input class="form-control-sm" type="password" v-model="user.password"></td>
                     <td><input class="form-control-sm" type="text" name="Name" v-model="user.name"></td>
                     <td><input class="form-control-sm" type="text" name="Email" v-model="user.email"></td>
@@ -89,10 +89,26 @@ export default {
         roles(){
             return this.$store.state.roles.roles;
         },
+        configs(){
+            return this.$store.state.configs.configs;
+        },
+        defaultPassword(){
+            try{
+                var list = this.$store.state.configs.configs.filter(item => {
+                    return item.name.includes('defaultPassword');
+                });
+                this.user.password=list[0].value;
+            }
+            catch(err){
+                return;
+            }
+        }
     },
     created(){
         this.getUsers()
         this.getRoles()
+        this.getConfigs()
+        this.getDefaultPassword()
     },
     methods: {
         getUsers () {
@@ -116,6 +132,19 @@ export default {
                 this.isLoading = false; 
                 this.error = err.message;
             })       
+        },
+        getConfigs(){
+            this.$store.dispatch('configs/getConfigs')
+            .then(()=>{
+                this.isLoading = false; 
+            })
+            .catch(err=>{
+                this.isLoading = false; 
+                this.error = err.message;
+            })
+        },
+        getDefaultPassword(){
+           
         },
         addUser(){  
             this.error = null;

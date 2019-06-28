@@ -14,24 +14,34 @@
                 </tr>
                 <tr v-for="config in configs" :key="config.id">
                     <td>{{config.id}}</td>
-                    <td>{{config.name}}</td>
-                    <td>{{config.value}}</td>
-                    <td>{{config.description}}</td>
-                    <td>
+                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control-sm" type="text"  v-model="config.name" required></td>
+                    <td v-else>{{config.name}}</td>
+                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control-sm" type="text"  v-model="config.value" required></td>
+                    <td v-else>{{config.value}}</td>
+                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control-sm" type="text"  v-model="config.description"></td>
+                    <td v-else>{{config.description}}</td>
+                    <td v-if="editMode && config.id == seletedConfig.id">
                         <span class="icon-btn" >
-                            <i class="fas fa-edit"></i>
-                            <i style="margin-left: 20px" class="fas fa-trash" @click="deleteConfig(config.id)"></i>
+                            <i style="margin-left: 2px" class="fas fa-save" @click="updateConfig(config)"></i>
+                            <i style="margin-left: 23px" class="fas fa-times" @click="disableEditMode"></i>
+                        </span>
+                    </td>
+                    <td v-else>
+                        <span class="icon-btn" >
+                            <i class="fas fa-edit" @click="enableEditMode(config)"></i>
+                            <i style="margin-left: 20px" class="fas fa-trash" @click="deleteConfig(config)"></i>
                         </span>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td><input class="form-control-sm" type="text"  v-model="config.name" required></td>
-                    <td><input class="form-control-sm" type="password" v-model="config.value"></td>
+                    <td><input class="form-control-sm" type="text" v-model="config.value"></td>
                     <td><input class="form-control-sm" type="text" name="Name" v-model="config.description"></td>
                     <button type="submit" class="btn btn-primary" @click="addConfig">Добавить</button>
                 </tr>
             </table>
+            <modal v-if="deleteMode" title="Удаление" message="Вы действительно хотите конфигурацию?"  @response="confirmDelete"/>
         </div>
     </div>
 </template>
@@ -53,7 +63,10 @@ export default {
             },    
             isLoading: false,
             success: null,
-            error: null
+            deleteMode: false,
+            editMode: false,
+            error: null,
+            seletedConfig: {}
         }
     },
     computed:{
@@ -90,11 +103,24 @@ export default {
                 })
             }
         },
-        deleteConfig(id){
-            this.$store.dispatch('configs/deleteConfig', id)
-            .then((res)=>{ 
-                this.error = null;
-                this.success =res;
+        deleteConfig(config){
+            if(confirm("Подтвердите удаление элемента "+config.name)){
+                this.$store.dispatch('configs/deleteConfig', config.id)
+                .then((res)=>{ 
+                    this.error = null;
+                    this.success =res;
+                    setTimeout(()=>{this.success = null},3000);
+                })
+                .catch(err=>{
+                    this.error = err.message;
+                })
+            }
+        },
+        updateConfig(config){
+            this.$store.dispatch('configs/updateConfig', config)
+            .then((res)=>{
+                this.editMode = false;
+                this.success = res;
                 setTimeout(()=>{this.success = null},3000);
             })
             .catch(err=>{
@@ -105,6 +131,13 @@ export default {
             this.config.name = '';
             this.config.value = '';
             this.config.description = '';
+        },
+        enableEditMode(config){
+            this.editMode = true;
+            this.seletedConfig.id = config.id;
+        },
+        disableEditMode(){
+            this.editMode = false;
         }
     }
 }
