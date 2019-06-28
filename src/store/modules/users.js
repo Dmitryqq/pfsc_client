@@ -104,14 +104,14 @@ const actions ={
     async updateUser({commit,rootState}, user){
         try{
             const token = localStorage.getItem('token')
-            const response = await axios.put(rootState.apiPrefix + `/user/`, [user.id, user],
+            const response = await axios.put(rootState.apiPrefix + `/user/` + user.id, user,
                 { headers: { 'Authorization': token }}
             )
             if(response.data.error)
                 throw new Error(response.data.error)
             else {
-                commit('updateUser',response.data.updatedUser)
-                return response.data.message
+                commit('updateUser',response.data)
+                return true;
             }
         }
         catch(err){

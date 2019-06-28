@@ -18,19 +18,38 @@
                 </tr>
                 <tr v-for="user in users" :key="user.id">
                     <td>{{user.id}}</td>
-                    <td>{{user.username}}</td>
+                    <td v-if="editMode && user.id == selectedUser.id"><input class="form-control-sm" type="text" name = "username" v-model="user.username"></td>
+                    <td v-else>{{user.username}}</td>
                     <!-- <td>{{user.password}}</td> -->
-                    <td>***</td>
-                    <td>{{user.name}}</td>
-                    <td>{{user.email}}</td>
-                    <td>{{user.enabled}}</td>
-                    <td>{{user.role.roleName}}</td>
-                    <!-- <td></td> -->
-                    <td>
-                        <!-- <i class="fas fa-trash"></i> -->
+                    <td v-if="editMode && user.id == selectedUser.id"><input class="form-control-sm" type="password" v-model="user.password"></td>
+                    <td v-else>***</td>
+                    <td v-if="editMode && user.id == selectedUser.id"><input class="form-control-sm" type="text" v-model="user.name"></td>
+                    <td v-else>{{user.name}}</td>
+                    <td v-if="editMode && user.id == selectedUser.id"><input class="form-control-sm" type="text" v-model="user.email"></td>
+                    <td v-else>{{user.email}}</td>
+                    <td v-if="editMode && user.id == selectedUser.id"><input class="form-control-sm" type="checkbox" v-model="user.enabled"></td>
+                    <td v-else>{{user.enabled}}</td>
+                    <td v-if="editMode && user.id == selectedUser.id">
+                        <div class="form-group">
+                        <select class="form-control-sm" v-model="user.roleId">
+                            <option disabled value="">Роль</option>
+                            <option v-for="role in roles" :key="role.id" :value="role.id">
+                                {{ role.roleName }}
+                            </option>
+                        </select>
+                        </div>
+                    </td>
+                    <td v-else>{{user.role.roleName}}</td>
+                    <td v-if="editMode && user.id == selectedUser.id">
                         <span class="icon-btn" >
-                            <i class="fas fa-user-edit" ></i>
-                            <i style="margin-left: 20px" class="fas fa-trash" @click="deleteUser(user.id)"></i>
+                            <i style="margin-left: 2px" class="fas fa-save" @click="updateUser(user)"></i>
+                            <i style="margin-left: 23px" class="fas fa-times" @click="disableEditMode"></i>
+                        </span>
+                    </td>
+                    <td v-else>
+                        <span class="icon-btn" >
+                            <i class="fas fa-edit" @click="enableEditMode(user)"></i>
+                            <i style="margin-left: 20px" class="fas fa-trash" @click="deleteUser(user)"></i>
                         </span>
                     </td>
                 </tr>
@@ -54,6 +73,7 @@
                     <button type="submit" class="btn btn-primary" @click="addUser">Добавить</button>
                 </tr>
             </table>
+        <p class="text-center">Если изменение пароля не требуется, то при изменении оставьте поле пустым</p>
         </div>
     </div>
 </template>
@@ -79,7 +99,9 @@ export default {
             },    
             isLoading: false,
             success: null,
-            error: null
+            error: null,
+            editMode: false,
+            selectedUser: {}
         }
     },
     computed:{
@@ -143,9 +165,6 @@ export default {
                 this.error = err.message;
             })
         },
-        getDefaultPassword(){
-           
-        },
         addUser(){  
             this.error = null;
             if(this.user.username.length>0 && this.user.password.length>0 && this.user.name.length>0 && this.user.email.length>0
@@ -161,11 +180,24 @@ export default {
                 })
             }
         },
-        deleteUser(id){
-            this.$store.dispatch('users/deleteUser', id)
-            .then((res)=>{ 
-                this.error = null;
-                this.success =res;
+        deleteUser(user){
+            if(confirm("Подтвердите удаление юзера " + user.username)){
+                this.$store.dispatch('users/deleteUser', user.id)
+                .then((res)=>{ 
+                    this.error = null;
+                    this.success =res;
+                    setTimeout(()=>{this.success = null},3000);
+                })
+                .catch(err=>{
+                    this.error = err.message;
+                })
+            }
+        },
+        updateUser(user){
+            this.$store.dispatch('users/updateUser', user)
+            .then((res)=>{
+                this.editMode = false;
+                this.success = res;
                 setTimeout(()=>{this.success = null},3000);
             })
             .catch(err=>{
@@ -179,6 +211,14 @@ export default {
             this.user.email = '';
             this.user.roleId = null;
             this.user.enabled = false;
+        },
+        enableEditMode(user){
+            this.editMode = true;
+            user.password = '',
+            this.selectedUser.id = user.id;
+        },
+        disableEditMode(){
+            this.editMode = false;
         }
     }
 }
