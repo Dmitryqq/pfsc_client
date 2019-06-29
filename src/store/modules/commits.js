@@ -3,9 +3,9 @@ import axios from 'axios'
 const state = {
     commits: [],
     statuses: [
-        { name : 'в ожидании', color:"badge-primary" },
-        { name : 'принят', color:"badge-success" },
-        { name : 'отклонен', color:"badge-danger" }
+        { name : 'в ожидании', value: null, color:"badge-primary" },
+        { name : 'принят', value: 'принят', color:"badge-success" },
+        { name : 'отклонен', value: 'отклонен', color:"badge-danger" }
     ]
 }
 
@@ -85,6 +85,34 @@ const actions = {
         try{
             const token = localStorage.getItem('token');
             await axios.delete(rootState.apiPrefix + '/commit/'+id, 
+                { headers: { 'Authorization': token }}
+            )
+        }
+        catch(err) {
+            if(err.response.data)
+                throw(err.response.data);
+            else
+                throw(err)
+        }
+    },
+    async deleteFile({rootState},id){
+        try{
+            const token = localStorage.getItem('token');
+            await axios.delete(rootState.apiPrefix + '/file/'+id, 
+                { headers: { 'Authorization': token }}
+            )
+        }
+        catch(err) {
+            if(err.response.data)
+                throw(err.response.data);
+            else
+                throw(err)
+        }
+    },
+    async updateCommit({rootState},payload){
+        try{
+            const token = localStorage.getItem('token');
+            await axios.put(rootState.apiPrefix + '/commit/'+payload.id, payload,
                 { headers: { 'Authorization': token }}
             )
         }

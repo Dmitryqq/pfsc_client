@@ -16,7 +16,9 @@
                 <label>Пароль</label>
                 <input type="password" class="form-control" placeholder="Пароль" v-model="user.password">
             </div>
-            <button type="submit" class="btn btn-primary" @click="auth" style="margin-top: 10%">Войти</button>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary" @click="auth" style="margin-top: 10%">Войти</button>
+            </div>
         </div>
     </div>
 </template>

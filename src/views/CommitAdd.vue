@@ -24,12 +24,12 @@
                     </td>
                 </tr>               
             </table>
-            <div class="card my-2" v-for="fileType in fileTypes" :key="fileType.id">
+            <div class="card my-2" v-for="(fileType,index) in fileTypes" :key="fileType.id">
                 <div class="card-header">
                     {{fileType.name}}
                     <span v-if="fileType.required" class="text-danger">*</span>
                     <label class="icon-btn" v-if="(!selectedFiles[fileType.id] || selectedFiles[fileType.id].length < fileType.maxAmount) && !validFiles[fileType.id]">
-                        <input type="file" multiple @change="onFileChanged($event, fileType.id)"/>
+                        <input type="file" multiple @change="onFileChanged($event, index)"/>
                         <i class="fas fa-plus"></i>
                     </label>
                     <span class="text-secondary float-right mr-3">maximum {{fileType.maxAmount}} files</span>
@@ -51,9 +51,11 @@
                     </table>
                 </div>
             </div>
-            <button class="btn btn-primary my-3" @click="send">
-                Отправить
-            </button>
+            <div class="text-center">
+                <button class="btn btn-primary my-3" @click="send">
+                    Отправить
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -81,15 +83,6 @@ export default {
         marks(){
             return this.$store.state.marks.marks;
         },
-        sortedFileTypes(){
-            return this.fileTypes.sort((a,b)=>{
-                if(a.required)
-                    return 1;
-                if(!b.required)
-                    return -1;
-                return 0;
-            })
-        },
         ...mapGetters('filetypes',{
             fileTypes: 'getUserFileTypes',
         })
@@ -104,15 +97,15 @@ export default {
         getFileTypes(){
             this.$store.dispatch('filetypes/getTypeOfFiles');
         },
-        onFileChanged (event, id) {
+        onFileChanged (event, index) {
             this.errors = [];
             this.success = '';
             this.showFileNames = false;
+            const id = this.fileTypes[index].id;
             if(!this.selectedFiles[id])
                 this.selectedFiles[id] = [];
-            const j = this.getFileTypeIndex(id);
             for (var i = 0; i < event.target.files.length; i++) {
-                if(this.selectedFiles[id].length >= this.fileTypes[j].maxAmount)   
+                if(this.selectedFiles[id].length >= this.fileTypes[index].maxAmount)   
                     break;
                 if(this.selectedFiles[id].find(f=>f.name==event.target.files[i].name)){ 
                     this.errors.push(event.target.files[i].name + ' уже добавлен'); 
@@ -177,14 +170,14 @@ export default {
         async send(){
             this.errors = [];
             this.success = '';
-            this.showFileNames = false;
             if(!this.validate()){
                 this.errors.push("Заполните все обязательные поля!");
                 return;
             }
+            this.showFileNames = false;
             this.sendCommit()
             .then(async res=>{
-                await asyncForEach(this.sortedFileTypes, async (f) => { 
+                await asyncForEach(this.fileTypes, async (f) => { 
                     if(this.selectedFiles[f.id] && this.selectedFiles[f.id].length>0 && !this.validFiles[f.id] && !this.toDeleteCommit){
                         this.sendFile(res, f.id)
                         .then(()=>{
