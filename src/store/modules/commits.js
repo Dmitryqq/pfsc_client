@@ -122,6 +122,33 @@ const actions = {
             else
                 throw(err)
         }
+    },
+    async getFile({rootState},[id,name]){
+        try{
+            const token = localStorage.getItem('token')
+            const response = await axios({
+                url: rootState.apiPrefix + '/file/'+ id,
+                method: 'GET',
+                responseType: 'blob', // important
+                headers: { 'Authorization': token }
+            })
+            const ext = name.split('.');
+            if(ext[1] == 'pdf'){
+                const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+                window.open(url)
+            }
+            else {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', name);
+                document.body.appendChild(link);
+                link.click();
+            }
+        }
+        catch(err) {
+            throw(err);
+        }
     }
 }
 

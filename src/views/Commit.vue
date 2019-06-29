@@ -65,7 +65,7 @@
                     <table class="table table-sm table-borderless" style="margin-bottom:0">
                         <tr v-for="(file,index) in fileType.files" :key="file.id">
                             <td>{{index+1}}</td>
-                            <td>{{getFileName(file.path)}}</td>
+                            <td @click="getFile(file.id,getFileName(file.path))" class="file-link">{{getFileName(file.path)}}</td>
                             <td class="text-secondary" style="font-size:.8rem;vertical-align:middle">{{file.createDate}}</td>
                             <td v-if="checkEnabled(fileType)">
                                 <label class="icon-btn" @click="showModal(false, file)">
@@ -248,6 +248,9 @@ export default {
                     return false;
                 return true; 
             }
+        },
+        getFile(id,name){
+            this.$store.dispatch('commits/getFile',[id,name]);
         }
     },
     data(){
@@ -280,5 +283,11 @@ export default {
 }
 .modal{
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+.commit .file-link{
+    cursor: pointer;
+}
+.commit .file-link:hover{
+    text-decoration: underline;
 }
 </style>
