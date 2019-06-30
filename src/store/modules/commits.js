@@ -149,6 +149,34 @@ const actions = {
         catch(err) {
             throw(err);
         }
+    },
+    async acceptCommit({rootState},id){
+        try{
+            const token = localStorage.getItem('token');
+            await axios.get(rootState.apiPrefix + `/commit/${id}/accept`,
+                { headers: { 'Authorization': token }}
+            )
+        }
+        catch(err) {
+            if(err.response.data)
+                throw(err.response.data);
+            else
+                throw(err)
+        }
+    },
+    async rejectCommit({rootState},[id,text]){
+        try{
+            const token = localStorage.getItem('token');
+            await axios.post(rootState.apiPrefix + `/commit/${id}/reject`, {text},
+                { headers: { 'Authorization': token }}
+            )
+        }
+        catch(err) {
+            if(err.response.data)
+                throw(err.response.data);
+            else
+                throw(err)
+        }
     }
 }
 

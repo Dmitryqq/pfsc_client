@@ -26,7 +26,7 @@
                 <tr v-if="commit.mark">
                     <th>Метка</th>
                     <td v-if="editMode">
-                        <select class="form-control form-control-sm col-lg-8" v-model="newCommit.markId" ref="markRef">
+                        <select class="form-control form-control-sm col-lg-8" v-model="newCommit.markId">
                             <option v-for="mark in marks" :key="mark.id" :value="mark.id">{{mark.name}}</option>
                         </select>
                     </td>
@@ -46,7 +46,7 @@
             </table>        
             
             <div class="text-center" v-if="editMode">
-                <button class="btn btn-primary  my-3" @click="showModal(true)">
+                <button class="btn btn-primary  my-3" @click="showModal(0)">
                     Обновить
                 </button> 
             </div>
@@ -68,7 +68,7 @@
                             <td @click="getFile(file.id,getFileName(file.path))" class="file-link">{{getFileName(file.path)}}</td>
                             <td class="text-secondary" style="font-size:.8rem;vertical-align:middle">{{file.createDate}}</td>
                             <td v-if="checkEnabled(fileType)">
-                                <label class="icon-btn" @click="showModal(false, file)">
+                                <label class="icon-btn" @click="showModal(1, file)">
                                     <i class="fas fa-trash"></i>
                                 </label>
                             </td>
@@ -76,37 +76,32 @@
                     </table>
                 </div>
             </div>
-        </div>
-        <div class="modal" tabindex="-1" role="dialog" id="myModal">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{modal.title}}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>{{modal.body}} {{file.path?getFileName(file.path) : ''}} ?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                    <button type="button" class="btn btn-primary" @click="confirm(modal.button)">{{modal.button}}</button>
-                </div>
-                </div>
+
+            <div class="text-center my-4" v-if="isAdmin && commit.status==null">
+                <button type="button" class="btn btn-primary mx-3" @click="showModal(2)">Принять</button>
+                <button type="button" class="btn btn-danger mx-3" @click="showModal(3)">Отклонить</button>
             </div>
+
         </div>
+        <Modal :title="modal.title" :button="modal.button" ref="myModal" @clickHandler="confirm(modal.button)">
+            <div class="form-group" v-if="showReject">
+                <textarea class="form-control" cols="" rows="7" v-model="rejectMessage"></textarea>
+            </div>
+            <p v-else>{{modal.body}} {{file.path?getFileName(file.path) : ''}} ?</p>
+        </Modal>
     </div>
 </template>
 
 <script>
 import Navbar from '@/components/Navbar.vue'
+import Modal from '@/components/Modal.vue'
 import { Promise } from 'q';
 
 export default {
     name: 'Commit',
     components: {
-        Navbar
+        Navbar,
+        Modal
     },
     computed:{
         statuses(){
@@ -120,6 +115,9 @@ export default {
         },
         marks(){
             return this.$store.state.marks.marks;
+        },
+        isAdmin(){
+            return this.user.role && this.user.role.roleName == 'Admin'
         }
     },
     methods: {
@@ -187,32 +185,46 @@ export default {
                     resolve();
                 })
                 .catch(err=> {
-                    this.error = err.message;
+                    reject(err);
                 });
             })
         },
         showModal(i,file = {}){
             this.error = '';
             this.success = '';
+            this.showReject = false;
             this.file = file;
-            if(i){
-                this.modal.title = 'Обновление наката';
+            if(i==0){
+                this.modal.title = 'Подтверждение действия';
                 this.modal.body = 'Вы действительно хотите обновить накат';
                 this.modal.button = 'Обновить';
             }
-            else{
-                this.modal.title = 'Удаление файла';
+            else if(i==1){
+                this.modal.title = 'Подтверждение действия';
                 this.modal.body = 'Вы действительно хотите удалить файл';
                 this.modal.button = 'Удалить';
             }
-            $('#myModal').modal('show');
+            else if(i==2){
+                this.modal.title = 'Подтверждение действия';
+                this.modal.body = 'Вы действительно хотите подтвердить накат';
+                this.modal.button = 'Подтвердить';
+            }
+            else if(i==3){
+                this.modal.title = 'Причина отклонения';
+                this.showReject = true;
+                this.modal.button = 'Отклонить';
+            }
+            this.$refs['myModal'].show();
         },
         confirm(button){
             if(button == 'Удалить')
                 this.deleteFile();
             else if(button == 'Обновить')
                 this.updateCommit();
-            $('#myModal').modal('hide');
+            else if(button == 'Подтвердить')
+                this.acceptCommit();
+            else if(button == 'Отклонить')
+                this.rejectCommit();
         },
         deleteFile(){
             this.$store.dispatch('commits/deleteFile',this.file.id)
@@ -238,11 +250,35 @@ export default {
             else
                 this.error = 'Заполните поле описание!';
         },
+        acceptCommit(){
+            this.$store.dispatch('commits/acceptCommit',this.commit.id)
+            .then(()=>{
+                this.getCommit();
+                this.success = 'Накат успешно принят';
+            })
+            .catch(err=>{
+                this.error = err.message;
+            })
+        },
+        rejectCommit(){
+            if(this.rejectMessage != ''){
+                this.$store.dispatch('commits/rejectCommit',[this.commit.id,this.rejectMessage])
+                .then(()=>{
+                    this.getCommit();
+                    this.success = 'Накат успешно отклонен';
+                })
+                .catch(err=>{
+                    this.error = err.message;
+                })
+                this.rejectMessage = ''
+            }
+            else
+                this.error = 'Причина отказа не указана'
+        },
         checkEnabled(fileType){
             if(this.roles){
                 const i = this.roles.findIndex(r=> r.id == fileType.roleId);
-                const j = this.roles.findIndex(r=> r.id == this.user.role.id);
-                if(fileType.roleId != this.user.role.id && (this.roles[j] && this.roles[i] && (this.roles[j].roleName != 'Admin' || this.roles[i].roleName == 'User')))
+                if(fileType.roleId != this.user.role.id && (this.roles[i] && (this.user.role.roleName != 'Admin' || this.roles[i].roleName == 'User')))
                     return false;
                 if(this.commit.status!=null && !fileType.enableAfterAccept)
                     return false;
@@ -265,7 +301,9 @@ export default {
                 button: ''
             },
             editMode: false,
-            newCommit: {}
+            newCommit: {},
+            showReject: null,
+            rejectMessage: ''
         }
     },
     mounted(){
