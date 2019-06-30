@@ -1,7 +1,9 @@
 <template>
-    <table class="table table-sm table-hover">
+    <div class="commitsTable">
+        <table class="table table-sm table-hover">
             <thead>
                 <tr>
+                <th scope="col">#</th>
                 <th scope="col">Имя пользователя</th>
                 <th scope="col">Номер</th>
                 <th scope="col">Описание</th>
@@ -18,7 +20,8 @@
             </thead>
             <th colspan="6" v-if="!commits.length"><p class="text-secondary">Список пуст</p></th>
             <tbody>
-                <tr v-for="commit in commits" :key="commit.id" @click="$emit('showCommit',commit.id)">
+                <tr v-for="(commit,i) in paginatedData" :key="commit.id" @click="$emit('showCommit',commit.id)">
+                    <td>{{currentPage * itemsPerPage +i+1}}</td>
                     <td>{{commit.userName}}</td>
                     <td>{{commit.number}}</td>
                     <td>{{commit.description}}</td>
@@ -27,18 +30,32 @@
                     <td><span class="badge" :class="getStatus(commit.status).color">{{getStatus(commit.status).name}}</span></td>
                 </tr>
             </tbody>
-    </table>
+        </table>
+        <Paginator :pageNumber="pageNumber" @switchPage="switchPage" ref="myPaginator"/>
+    </div>
 </template>
 
 <script>
+import Paginator from '@/components/Paginator.vue'
 export default {
     name: 'CommitsTable',
     props:{
         dataSet: Array
     },
+    components: {
+        Paginator
+    },
     computed:{
         statuses(){
             return this.$store.state.commits.statuses;
+        },
+        pageNumber(){
+            return Math.ceil(this.commits.length/this.itemsPerPage);
+        },
+        paginatedData(){
+            const start = this.currentPage * this.itemsPerPage,
+                end = start + this.itemsPerPage;
+            return this.commits.slice(start, end);
         }
     },
     methods:{
@@ -54,16 +71,25 @@ export default {
         aFilter(status){
             this.commits = this.dataSet.filter(c=>c.status==status || status==this.statuses[0].name && c.status == null);
             this.showMarks=false;
+            this.$refs.myPaginator.reload();
+            this.currentPage = 0;
         },
         dFilter(){    
             this.commits = this.dataSet;       
             this.showMarks=false;
+            this.$refs.myPaginator.reload();
+            this.currentPage = 0;
+        },
+        switchPage(i){
+            this.currentPage = i;
         }
     },
     data(){
         return{
             commits: [],
-            showMarks: false
+            showMarks: false,
+            itemsPerPage: 20,
+            currentPage: 0
         }
     },
     watch: {
@@ -107,7 +133,7 @@ p{
     padding-top: 100px;
 }
 
-tbody td:nth-child(3){
+tbody td:nth-child(4){
     max-width: 200px;
     white-space: nowrap; 
     overflow: hidden;

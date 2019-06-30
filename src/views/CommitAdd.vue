@@ -225,9 +225,6 @@ export default {
         },
         deleteCommit(){
             this.$store.dispatch('commits/deleteCommit',this.commit.id)
-            .catch(err=> {
-                console.log(err);
-            });
         },
         clearData(){
             this.commit = {
