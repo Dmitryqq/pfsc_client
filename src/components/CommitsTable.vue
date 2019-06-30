@@ -44,12 +44,12 @@ export default {
     methods:{
         getStatus(status){
             const i = this.statuses.findIndex(s=>{
-                return s.name == status;
+                return s.value == status;
             })
             if(i>=0)
                 return this.statuses[i];
             else 
-                return this.statuses[0];
+                return '';
         },
         aFilter(status){
             this.commits = this.dataSet.filter(c=>c.status==status || status==this.statuses[0].name && c.status == null);

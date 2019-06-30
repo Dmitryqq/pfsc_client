@@ -1,7 +1,8 @@
 <template>
     <div class="commitAdd">
         <Navbar/>
-        <div class="col-md-7 mx-auto my-5">
+        <Loader  v-if="isLoading"/>
+        <div class="col-md-7 mx-auto my-5" v-else>
             <div class="alert alert-danger" role="alert" v-for="error in errors" :key="error">
                 {{error}}
             </div>
@@ -12,7 +13,7 @@
                 <tr>
                     <th>Метка <span class="text-danger">*</span></th>
                     <td>
-                        <select class="form-control form-control-sm col-lg-6" v-model="commit.markId" ref="markRef">
+                        <select class="form-control form-control-sm col-lg-6" v-model="commit.markId" :disabled="errors.length>0 && !toDeleteCommit">
                             <option v-for="mark in marks" :key="mark.id" :value="mark.id">{{mark.name}}</option>
                         </select>
                     </td>
@@ -20,16 +21,16 @@
                 <tr>
                     <th>Описание <span class="text-danger">*</span></th>
                     <td>
-                        <textarea class="form-control" cols="" rows="7" v-model="commit.description" ref="descRef"></textarea>
+                        <textarea class="form-control" cols="" rows="7" v-model="commit.description" :disabled="errors.length>0 && !toDeleteCommit"></textarea>
                     </td>
                 </tr>               
             </table>
-            <div class="card my-2" v-for="fileType in fileTypes" :key="fileType.id">
+            <div class="card my-2" v-for="(fileType,index) in fileTypes" :key="fileType.id">
                 <div class="card-header">
                     {{fileType.name}}
                     <span v-if="fileType.required" class="text-danger">*</span>
                     <label class="icon-btn" v-if="(!selectedFiles[fileType.id] || selectedFiles[fileType.id].length < fileType.maxAmount) && !validFiles[fileType.id]">
-                        <input type="file" multiple @change="onFileChanged($event, fileType.id)"/>
+                        <input type="file" multiple @change="onFileChanged($event, index)"/>
                         <i class="fas fa-plus"></i>
                     </label>
                     <span class="text-secondary float-right mr-3">maximum {{fileType.maxAmount}} files</span>
@@ -43,7 +44,7 @@
                                 <label class="icon-btn" @click="deleteFile(fileType.id,index)" v-if="!validFiles[fileType.id]">
                                     <i class="fas fa-trash"></i>
                                 </label>
-                                <label class="icon-btn" v-else>
+                                <label class="icon-btn text-secondary" v-else>
                                     загружено
                                 </label>
                             </td>
@@ -51,15 +52,18 @@
                     </table>
                 </div>
             </div>
-            <button class="btn btn-primary my-3" @click="send">
-                Отправить
-            </button>
+            <div class="text-center">
+                <button class="btn btn-primary my-3" @click="send">
+                    Отправить
+                </button>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import Navbar from '@/components/Navbar.vue'
+import Loader from '@/components/Loader.vue'
 import { mapGetters } from 'vuex'
 import { Promise } from 'q';
 import { setTimeout } from 'timers';
@@ -75,20 +79,12 @@ async function asyncForEach(array, callback) {
 export default {
     name: 'Commit',
     components: {
-        Navbar
+        Navbar,
+        Loader
     },
     computed:{
         marks(){
             return this.$store.state.marks.marks;
-        },
-        sortedFileTypes(){
-            return this.fileTypes.sort((a,b)=>{
-                if(a.required)
-                    return 1;
-                if(!b.required)
-                    return -1;
-                return 0;
-            })
         },
         ...mapGetters('filetypes',{
             fileTypes: 'getUserFileTypes',
@@ -96,23 +92,31 @@ export default {
     },
     methods:{
         getMarks(){
+            this.isLoading = true;
             this.$store.dispatch('marks/getMarks')
             .then(()=>{
                 this.commit.markId = this.marks[0].id;
             })
+            .finally(()=>{
+                this.isLoading = false;
+            })
         },
         getFileTypes(){
-            this.$store.dispatch('filetypes/getTypeOfFiles');
+            this.isLoading = true;
+            this.$store.dispatch('filetypes/getTypeOfFiles')
+            .finally(()=>{
+                this.isLoading = false;
+            })
         },
-        onFileChanged (event, id) {
+        onFileChanged (event, index) {
             this.errors = [];
             this.success = '';
             this.showFileNames = false;
+            const id = this.fileTypes[index].id;
             if(!this.selectedFiles[id])
                 this.selectedFiles[id] = [];
-            const j = this.getFileTypeIndex(id);
             for (var i = 0; i < event.target.files.length; i++) {
-                if(this.selectedFiles[id].length >= this.fileTypes[j].maxAmount)   
+                if(this.selectedFiles[id].length >= this.fileTypes[index].maxAmount)   
                     break;
                 if(this.selectedFiles[id].find(f=>f.name==event.target.files[i].name)){ 
                     this.errors.push(event.target.files[i].name + ' уже добавлен'); 
@@ -137,9 +141,6 @@ export default {
                     break;
                 }  
             return flag;            
-        },
-        getFileTypeIndex(id){
-            return this.fileTypes.findIndex(f=>f.id==id);
         },
         sendCommit(){
             return new Promise((resolve,reject)=>{
@@ -175,16 +176,18 @@ export default {
             })
         },
         async send(){
+            this.isLoading = true;
+            this.toDeleteCommit = false;
             this.errors = [];
             this.success = '';
-            this.showFileNames = false;
             if(!this.validate()){
                 this.errors.push("Заполните все обязательные поля!");
                 return;
             }
+            this.showFileNames = false;
             this.sendCommit()
             .then(async res=>{
-                await asyncForEach(this.sortedFileTypes, async (f) => { 
+                await asyncForEach(this.fileTypes, async (f) => { 
                     if(this.selectedFiles[f.id] && this.selectedFiles[f.id].length>0 && !this.validFiles[f.id] && !this.toDeleteCommit){
                         this.sendFile(res, f.id)
                         .then(()=>{
@@ -194,30 +197,31 @@ export default {
                             this.showFileNames = false;
                             this.validFiles[f.id] = false;
                             this.errors.push(err.message);
-                            this.$refs.markRef.disabled = true;
-                            this.$refs.descRef.disabled = true;
                             if(f.required)
                                 this.toDeleteCommit = true;                        
                         })
                     }
                     await waitFor(500);
                 })
+                this.isLoading = false;
                 if(this.toDeleteCommit){
                     this.deleteCommit();
                     this.validFiles = {};
                     this.commit.id=null;
-                    this.toDeleteCommit = false;
                 }
                 else if(this.errors.length < 1){
                     this.clearData();
                     this.success="Накат успешно добавлен";
                 }
                 this.showFileNames = true;
-
+                
             })          
             .catch(err=>{
                 this.errors.push(err.message);
-            })        
+            })     
+            .finally(()=>{
+                this.isLoading = false;
+            })   
         },
         deleteCommit(){
             this.$store.dispatch('commits/deleteCommit',this.commit.id)
@@ -236,8 +240,6 @@ export default {
             this.errors = [];
             this.success = '';
             this.validFiles = {};
-            this.$refs.markRef.disabled = false;
-            this.$refs.descRef.disabled = false;
         }
     },
     data(){
@@ -252,7 +254,8 @@ export default {
             errors: [],
             success: '',
             validFiles: {},
-            toDeleteCommit: false
+            toDeleteCommit: false,
+            isLoading: false
         }
     },
     mounted(){
@@ -265,5 +268,10 @@ export default {
 .commitAdd th{
     width: 150px;
 }
-
+.commitAdd{
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-flow: column;
+}
 </style>

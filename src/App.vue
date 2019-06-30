@@ -19,6 +19,9 @@ export default {
   --sc-bg-color: #f8f9fa;
 }
 
+html,body{
+  height: 100%;
+}
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -27,6 +30,7 @@ export default {
   margin:0;
   padding:0;
   background: var(--pr-bg-color);
+  height: 100%;
 }
 
 .icon-btn{
