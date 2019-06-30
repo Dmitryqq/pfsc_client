@@ -18,7 +18,7 @@
                     <td v-else>{{config.name}}</td>
                     <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control-sm" type="text"  v-model="config.value" required></td>
                     <td v-else>{{config.value}}</td>
-                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control-sm" type="text"  v-model="config.description"></td>
+                    <td v-if="editMode && config.id == seletedConfig.id"><textarea class="form-control" type="text" rows="1" v-model="config.description"></textarea></td>
                     <td v-else>{{config.description}}</td>
                     <td v-if="editMode && config.id == seletedConfig.id">
                         <span class="icon-btn" >
@@ -36,8 +36,8 @@
                 <tr>
                     <td></td>
                     <td><input class="form-control-sm" type="text"  v-model="config.name" required></td>
-                    <td><input class="form-control-sm" type="text" v-model="config.value"></td>
-                    <td><input class="form-control-sm" type="text" name="Name" v-model="config.description"></td>
+                    <td><input class="form-control-sm col-sm-12" type="text" v-model="config.value"></td>
+                    <td><textarea class="form-control" type="text" rows="1" v-model="config.description"></textarea></td>
                     <button type="submit" class="btn btn-primary" @click="addConfig">Добавить</button>
                 </tr>
             </table>
@@ -157,7 +157,7 @@ td:nth-child(1){
     width: 1%;
 }
 td:nth-child(2){
-    width: 20%;
+    width: 15%;
 }
 td:nth-child(3){
     width: 30%;

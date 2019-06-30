@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { type } from 'os';
 
 const state = {
     typeOfFiles: []
@@ -24,13 +25,14 @@ const actions ={
     async addTypeOfFile({commit, rootState}, typeOfFile){
         try{
             const token = localStorage.getItem('token')
+            console.log(typeOfFile)
             const response = await axios.post(rootState.apiPrefix + `/typeOfFile`, typeOfFile,
                 { headers: { 'Authorization': 'Bearer '+ token }}
             )
             if(response.data.error)
                 throw new Error(response.data.error)
             else
-                commit('addTypeOfFile',response.data)
+                commit('addTypeOfFile', response.data)
         }
         catch(err){
             throw(err);
@@ -57,14 +59,14 @@ const actions ={
     async updateTypeOfFile({commit,rootState}, typeOfFile){
         try{
             const token = localStorage.getItem('token')
-            const response = await axios.put(rootState.apiPrefix + `/typeOfFile/`, [typeOfFile.id, typeOfFile],
+            const response = await axios.put(rootState.apiPrefix + `/typeOfFile/` + typeOfFile.id, typeOfFile,
                 { headers: { 'Authorization': token }}
             )
             if(response.data.error)
                 throw new Error(response.data.error)
             else {
-                commit('updateTypeOfFile',response.data.updatedTypeOfFile)
-                return response.data.message
+                commit('updateTypeOfFile',response.data)
+                return true
             }
         }
         catch(err){
@@ -77,13 +79,14 @@ const mutations = {
     addTypeOfFile(state, typeOfFile) {
         state.typeOfFiles.push({
             id: typeOfFile.id,
-            typeOfFilename: typeOfFile.typeOfFilename,
-            password: typeOfFile.password,
             name: typeOfFile.name,
-            email: typeOfFile.email,
+            maxSize: typeOfFile.maxSize,
+            required: typeOfFile.required,
+            types: typeOfFile.types,
+            maxAmount: typeOfFile.maxAmount,
+            enableAfterAccept: typeOfFile.enableAfterAccept,
             role: typeOfFile.role,
             roleId: typeOfFile.roleId,
-            enabled: typeOfFile.enabled,
             createDate: typeOfFile.createDate,
             updateDate: typeOfFile.updateDate
         });
@@ -104,6 +107,8 @@ const mutations = {
         state.typeOfFiles[i].types = typeOfFile.types,
         state.typeOfFiles[i].maxAmount = typeOfFile.maxAmount,
         state.typeOfFiles[i].enableAfterAccept = typeOfFile.enableAfterAccept,
+        state.typeOfFiles[i].roleId = typeOfFile.roleId,
+        state.typeOfFiles[i].role = typeOfFile.role,
         state.typeOfFiles[i].createDate = typeOfFile.createDate,
         state.typeOfFiles[i].updateDate = typeOfFile.updateDate
     }

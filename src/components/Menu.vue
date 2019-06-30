@@ -8,13 +8,16 @@
                     </a>
                 </li> -->
                 <li>
-                    <a href="/dashboard/users">Users</a>
+                    <a href="/dashboard/users">Пользователи</a>
                 </li>
                 <li>
-                    <a href="/dashboard/roles">Roles</a>
+                    <a href="/dashboard/roles">Роли</a>
                 </li>
                 <li>
-                    <a href="/dashboard/configs">Configs</a>
+                    <a href="/dashboard/configs">Конфиги</a>
+                </li>
+                <li>
+                    <a href="/dashboard/filetypes">Типы файлов</a>
                 </li>
             </ul>
         </div>
@@ -46,7 +49,7 @@ export default {
     height: 100%;
     margin-left: -250px;
     overflow-y: auto;
-    background: rgb(230, 230, 230);
+    background: rgb(248, 244, 244);
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
     -o-transition: all 0.5s ease;
@@ -92,8 +95,8 @@ export default {
 
 .sidebar-nav li a:hover {
     text-decoration: none;
-    color: #fff;
-    background: rgba(255,255,255,0.2);
+    color: rgb(30, 0, 255);
+    background: rgba(208, 208, 208, 0.2);
 }
 
 .sidebar-nav li a:active,
