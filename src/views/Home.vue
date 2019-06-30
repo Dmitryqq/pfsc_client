@@ -1,8 +1,9 @@
 <template>
     <div class="home">
         <Navbar/>
-        <div class="container my-5">
-            <router-link to="/commit/new" class="btn btn-primary btn-sm add-btn">Добавить</router-link>
+        <Loader v-if="isLoading"/>
+        <div class="container my-5" v-else>
+            <router-link to="/commit/new" class="btn btn-primary btn-sm add-btn" v-if="role && role.roleName=='User'">Добавить</router-link>
             <CommitsTable :dataSet="commits" @showCommit="clickListener"/>
         </div>
         
@@ -12,20 +13,34 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import CommitsTable from '@/components/CommitsTable.vue'
+import Loader from '@/components/Loader.vue'
 export default {
     name: 'Home',
     components: {
         Navbar,
-        CommitsTable
+        CommitsTable,
+        Loader
+    },
+    data(){
+        return{
+            isLoading: false
+        }
     },
     computed: {
         commits() {
             return this.$store.state.commits.commits;
+        },
+        role() {
+            return this.$store.state.users.user.role;
         }
     },
     methods:{
         getCommits(){
-            this.$store.dispatch('commits/getCommits');
+            this.isLoading = true;
+            this.$store.dispatch('commits/getCommits')
+            .finally(()=>{
+                this.isLoading = false;
+            })
         },
         clickListener(id){
             this.$router.replace(`/commit/${id}`);
@@ -44,6 +59,12 @@ export default {
 <style>
 .add-btn{
     margin-bottom: 20px;
+}
+.home{
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-flow: column;
 }
 </style>
 

@@ -1,7 +1,8 @@
 <template>
     <div class="commit">
         <Navbar/>
-        <div class="col-md-7 mx-auto my-5">
+        <Loader v-if="isLoading"/>
+        <div class="col-md-7 mx-auto my-5" v-else>
 
             <div class="alert alert-danger" role="alert" v-if="error">
                 {{error}}
@@ -95,13 +96,15 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Modal from '@/components/Modal.vue'
+import Loader from '@/components/Loader.vue'
 import { Promise } from 'q';
 
 export default {
     name: 'Commit',
     components: {
         Navbar,
-        Modal
+        Modal,
+        Loader
     },
     computed:{
         statuses(){
@@ -122,6 +125,7 @@ export default {
     },
     methods: {
         getCommit() {
+            this.isLoading = true;
             this.$store.dispatch('commits/getCommit', this.$route.params.id)
                 .then(res=>{
                     this.commit = res;
@@ -132,6 +136,9 @@ export default {
                         this.newCommit.description = this.commit.description;
                         this.newCommit.markId = this.commit.markId;
                     }
+                })
+                .finally(()=>{
+                    this.isLoading = false;
                 })
         },
         getRoles(){
@@ -160,6 +167,7 @@ export default {
                 this.error = 'Количество файлов превышает допустимое число'
                 return;
             }
+            this.isLoading = true;
             const selectedFiles = [];
             for(let i = 0; i < event.target.files.length; i++)
                 selectedFiles.push(event.target.files[i]);
@@ -170,7 +178,10 @@ export default {
             })
             .catch(err=>{
                 this.error = err.message;
-            })          
+            }) 
+            .finally(()=>{
+                this.isLoading = false;
+            })         
         },
         sendFiles(fileTypeId, files){
             return new Promise((resolve,reject)=>{
@@ -206,8 +217,8 @@ export default {
             }
             else if(i==2){
                 this.modal.title = 'Подтверждение действия';
-                this.modal.body = 'Вы действительно хотите подтвердить накат';
-                this.modal.button = 'Подтвердить';
+                this.modal.body = 'Вы действительно хотите принять накат';
+                this.modal.button = 'Принять';
             }
             else if(i==3){
                 this.modal.title = 'Причина отклонения';
@@ -221,12 +232,13 @@ export default {
                 this.deleteFile();
             else if(button == 'Обновить')
                 this.updateCommit();
-            else if(button == 'Подтвердить')
+            else if(button == 'Принять')
                 this.acceptCommit();
             else if(button == 'Отклонить')
                 this.rejectCommit();
         },
         deleteFile(){
+            this.isLoading = true;
             this.$store.dispatch('commits/deleteFile',this.file.id)
             .then(()=>{
                 this.getCommit();
@@ -234,23 +246,31 @@ export default {
             })
             .catch(err=> {
                 this.error = err.message;
-            });
+            })
+            .finally(()=>{
+                this.isLoading = false;
+            })
         },
         updateCommit(){
             if(this.newCommit.description != '') {
                 if(this.commit.description!=this.newCommit.description || this.commit.markId!= this.newCommit.markId)
+                    this.isLoading = true;
                     this.$store.dispatch('commits/updateCommit',this.newCommit)
                     .then(()=>{
                         this.success= 'Накат успешно обновлен'
                     })
                     .catch(err=> {
                         this.error = err.message;
-                    });
+                    })
+                    .finally(()=>{
+                        this.isLoading = false;
+                    })
             }
             else
                 this.error = 'Заполните поле описание!';
         },
         acceptCommit(){
+            this.isLoading = true;
             this.$store.dispatch('commits/acceptCommit',this.commit.id)
             .then(()=>{
                 this.getCommit();
@@ -259,9 +279,13 @@ export default {
             .catch(err=>{
                 this.error = err.message;
             })
+            .finally(()=>{
+                this.isLoading = false;
+            })
         },
         rejectCommit(){
             if(this.rejectMessage != ''){
+                this.isLoading = true;
                 this.$store.dispatch('commits/rejectCommit',[this.commit.id,this.rejectMessage])
                 .then(()=>{
                     this.getCommit();
@@ -269,6 +293,9 @@ export default {
                 })
                 .catch(err=>{
                     this.error = err.message;
+                })
+                .finally(()=>{
+                    this.isLoading = false;
                 })
                 this.rejectMessage = ''
             }
@@ -303,7 +330,8 @@ export default {
             editMode: false,
             newCommit: {},
             showReject: null,
-            rejectMessage: ''
+            rejectMessage: '',
+            isLoading: false
         }
     },
     mounted(){
@@ -327,5 +355,11 @@ export default {
 }
 .commit .file-link:hover{
     text-decoration: underline;
+}
+.commit{
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-flow: column;
 }
 </style>

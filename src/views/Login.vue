@@ -1,6 +1,7 @@
 <template>
     <div class="login">
-        <div class="col-md-3 mx-auto" style="padding-top: 8%">
+        <Loader v-if="isLoading"/>
+        <div class="col-md-3 mx-auto" style="margin-top: -5%" v-else>
             <div class="brand" style="margin-bottom: 13%">
                 <img alt="Vue logo" src="../assets/logo.png"  height="47" class="d-inline-block align-top">
                 <span>Банк Компаньон</span>
@@ -24,15 +25,20 @@
 </template>
 
 <script>
+import Loader from '@/components/Loader.vue'
 export default {
     name: 'login',
+    components: {
+        Loader
+    },
     data(){
         return{
             user: {
                 username: '',
                 password: ''
             },
-            error: ''
+            error: '',
+            isLoading: false
         }
     },
     methods:{
@@ -69,6 +75,9 @@ export default {
     background: var(--sc-bg-color);
     min-width: 100%;
     min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>
 

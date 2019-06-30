@@ -8,13 +8,13 @@
                     </a>
                 </li> -->
                 <li>
-                    <a href="/dashboard/users">Users</a>
+                    <router-link to="/dashboard/users">Users</router-link>
                 </li>
                 <li>
-                    <a href="/dashboard/roles">Roles</a>
+                    <router-link to="/dashboard/roles">Roles</router-link>
                 </li>
                 <li>
-                    <a href="/dashboard/configs">Configs</a>
+                    <router-link to="/dashboard/configs">Configs</router-link>
                 </li>
             </ul>
         </div>

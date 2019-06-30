@@ -1,7 +1,8 @@
 <template>
     <div class="commitAdd">
         <Navbar/>
-        <div class="col-md-7 mx-auto my-5">
+        <Loader  v-if="isLoading"/>
+        <div class="col-md-7 mx-auto my-5" v-else>
             <div class="alert alert-danger" role="alert" v-for="error in errors" :key="error">
                 {{error}}
             </div>
@@ -12,7 +13,7 @@
                 <tr>
                     <th>Метка <span class="text-danger">*</span></th>
                     <td>
-                        <select class="form-control form-control-sm col-lg-6" v-model="commit.markId" ref="markRef">
+                        <select class="form-control form-control-sm col-lg-6" v-model="commit.markId" :disabled="errors.length>0 && !toDeleteCommit">
                             <option v-for="mark in marks" :key="mark.id" :value="mark.id">{{mark.name}}</option>
                         </select>
                     </td>
@@ -20,7 +21,7 @@
                 <tr>
                     <th>Описание <span class="text-danger">*</span></th>
                     <td>
-                        <textarea class="form-control" cols="" rows="7" v-model="commit.description" ref="descRef"></textarea>
+                        <textarea class="form-control" cols="" rows="7" v-model="commit.description" :disabled="errors.length>0 && !toDeleteCommit"></textarea>
                     </td>
                 </tr>               
             </table>
@@ -43,7 +44,7 @@
                                 <label class="icon-btn" @click="deleteFile(fileType.id,index)" v-if="!validFiles[fileType.id]">
                                     <i class="fas fa-trash"></i>
                                 </label>
-                                <label class="icon-btn" v-else>
+                                <label class="icon-btn text-secondary" v-else>
                                     загружено
                                 </label>
                             </td>
@@ -62,6 +63,7 @@
 
 <script>
 import Navbar from '@/components/Navbar.vue'
+import Loader from '@/components/Loader.vue'
 import { mapGetters } from 'vuex'
 import { Promise } from 'q';
 import { setTimeout } from 'timers';
@@ -77,7 +79,8 @@ async function asyncForEach(array, callback) {
 export default {
     name: 'Commit',
     components: {
-        Navbar
+        Navbar,
+        Loader
     },
     computed:{
         marks(){
@@ -89,13 +92,21 @@ export default {
     },
     methods:{
         getMarks(){
+            this.isLoading = true;
             this.$store.dispatch('marks/getMarks')
             .then(()=>{
                 this.commit.markId = this.marks[0].id;
             })
+            .finally(()=>{
+                this.isLoading = false;
+            })
         },
         getFileTypes(){
-            this.$store.dispatch('filetypes/getTypeOfFiles');
+            this.isLoading = true;
+            this.$store.dispatch('filetypes/getTypeOfFiles')
+            .finally(()=>{
+                this.isLoading = false;
+            })
         },
         onFileChanged (event, index) {
             this.errors = [];
@@ -131,9 +142,6 @@ export default {
                 }  
             return flag;            
         },
-        getFileTypeIndex(id){
-            return this.fileTypes.findIndex(f=>f.id==id);
-        },
         sendCommit(){
             return new Promise((resolve,reject)=>{
                 if(this.commit.id != null)
@@ -168,6 +176,8 @@ export default {
             })
         },
         async send(){
+            this.isLoading = true;
+            this.toDeleteCommit = false;
             this.errors = [];
             this.success = '';
             if(!this.validate()){
@@ -187,30 +197,31 @@ export default {
                             this.showFileNames = false;
                             this.validFiles[f.id] = false;
                             this.errors.push(err.message);
-                            this.$refs.markRef.disabled = true;
-                            this.$refs.descRef.disabled = true;
                             if(f.required)
                                 this.toDeleteCommit = true;                        
                         })
                     }
                     await waitFor(500);
                 })
+                this.isLoading = false;
                 if(this.toDeleteCommit){
                     this.deleteCommit();
                     this.validFiles = {};
                     this.commit.id=null;
-                    this.toDeleteCommit = false;
                 }
                 else if(this.errors.length < 1){
                     this.clearData();
                     this.success="Накат успешно добавлен";
                 }
                 this.showFileNames = true;
-
+                
             })          
             .catch(err=>{
                 this.errors.push(err.message);
-            })        
+            })     
+            .finally(()=>{
+                this.isLoading = false;
+            })   
         },
         deleteCommit(){
             this.$store.dispatch('commits/deleteCommit',this.commit.id)
@@ -229,8 +240,6 @@ export default {
             this.errors = [];
             this.success = '';
             this.validFiles = {};
-            this.$refs.markRef.disabled = false;
-            this.$refs.descRef.disabled = false;
         }
     },
     data(){
@@ -245,7 +254,8 @@ export default {
             errors: [],
             success: '',
             validFiles: {},
-            toDeleteCommit: false
+            toDeleteCommit: false,
+            isLoading: false
         }
     },
     mounted(){
@@ -258,5 +268,10 @@ export default {
 .commitAdd th{
     width: 150px;
 }
-
+.commitAdd{
+    width: 100%;
+    height:100%;
+    display: flex;
+    flex-flow: column;
+}
 </style>
