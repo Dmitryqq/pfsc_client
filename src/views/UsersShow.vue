@@ -54,9 +54,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>{{defaultPassword}}</td>
+                    <td></td>
                     <td><input class="form-control-sm" type="text" name = "username" v-model="user.username"></td>
-                    <td><input class="form-control-sm" type="password" v-model="user.password"></td>
+                    <td><input class="form-control-sm" type="password" v-model="user.password">{{defaultPassword}}</td>
                     <td><input class="form-control-sm" type="text" name="Name" v-model="user.name"></td>
                     <td><input class="form-control-sm" type="text" name="Email" v-model="user.email"></td>
                     <td><input class="form-control-sm" type="checkbox" name="Enabled" v-model="user.enabled"></td>
@@ -130,7 +130,6 @@ export default {
         this.getUsers()
         this.getRoles()
         this.getConfigs()
-        this.getDefaultPassword()
     },
     methods: {
         getUsers () {
@@ -244,13 +243,13 @@ td:nth-child(1){
     width: 1%;
 }
 td:nth-child(2){
-    width: 20%;
+    width: 30%;
 }
 td:nth-child(3){
     width: 30%;
 }
 td:nth-child(4){
-    width: 50%;
+    width: 20%;
 }
 p {
     padding: 0  0 10px 0.75em;

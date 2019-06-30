@@ -86,7 +86,7 @@ export default {
         marks(){
             return this.$store.state.marks.marks;
         },
-        ...mapGetters('filetypes',{
+        ...mapGetters('typeOfFiles',{
             fileTypes: 'getUserFileTypes',
         })
     },
@@ -103,7 +103,7 @@ export default {
         },
         getFileTypes(){
             this.isLoading = true;
-            this.$store.dispatch('filetypes/getTypeOfFiles')
+            this.$store.dispatch('typeOfFiles/getTypeOfFiles')
             .finally(()=>{
                 this.isLoading = false;
             })
