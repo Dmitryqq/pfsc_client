@@ -18,10 +18,11 @@
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {{username}}
+                            {{user.name}}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-                            <router-link to="/dashboard" class="dropdown-item">Настройки</router-link>
+                            <router-link to="/dashboard" class="dropdown-item" v-if="user.role && user.role.roleName=='Admin'">Настройки</router-link>
+                            <router-link to="/account" class="dropdown-item">Мой аккаунт</router-link>
                             <a href="" class="dropdown-item" @click="logout">Выйти</a>
                         </div>
                     </li>
@@ -41,8 +42,8 @@ export default {
         SearchForm
     },
     computed: {
-        username() {
-            return this.$store.state.users.user.name;
+        user() {
+            return this.$store.state.users.user;
         }
     },
     mounted(){

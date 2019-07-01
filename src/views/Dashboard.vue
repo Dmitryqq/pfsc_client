@@ -32,7 +32,6 @@ export default {
 .dashboard-content{
     width: 100%; 
     display: block;
-    overflow: auto;
     font-size: 12pt;
 }
 .dashboard td{
