@@ -23,6 +23,7 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                             <router-link to="/dashboard" class="dropdown-item" v-if="user.role && user.role.roleName=='Admin'">Настройки</router-link>
                             <router-link to="/account" class="dropdown-item">Мой аккаунт</router-link>
+                            <router-link to="/help" class="dropdown-item">Справка</router-link>
                             <a href="" class="dropdown-item" @click="logout">Выйти</a>
                         </div>
                     </li>

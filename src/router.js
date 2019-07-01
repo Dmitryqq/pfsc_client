@@ -87,7 +87,12 @@ const router = new Router({
         name: 'commit',
         component: () => import('./views/Commit.vue'),
         meta: {requiresAuth: true}
-      }
+      },
+      {
+        path: '/help',
+        name: 'help',
+        component: () => import('./views/HelpPage.vue')
+      },
     ]
   })
 
