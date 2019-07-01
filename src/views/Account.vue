@@ -1,16 +1,8 @@
 <template>
      <div class="account">
-        <Navbar/>
         <div class="container">
             <div class="row">
-                <div class="col-2">
-                <Menu/>
-                </div>
                 <div v-if="currentUser" class="col-8">
-                    <!-- <div>
-                        <legend>About You</legend>
-                        <input class="form-control-sm" type="text" placeholder="First Name" />
-                    </div> -->
                     <div>
                         <label>id:</label><br>
                         <input class="form-control-sm" type="text" v-model="user.id" disabled>
@@ -21,15 +13,15 @@
                     </div>
                     <div>
                         <label>Password:</label><br>
-                        <input class="form-control-sm" type="password" v-model="user.password"><br>
+                        <input class="form-control-sm" type="password" v-model="user.password">
                     </div>
                     <div>
                         <label>Name:</label><br>
-                        <input class="form-control-sm" type="text" v-model="user.name"><br>
+                        <input class="form-control-sm" type="text" v-model="user.name">
                     </div>
                     <div>
                         <label>Email:</label><br>
-                        <input class="form-control-sm" type="email" v-model="user.email"><br>
+                        <input class="form-control-sm" type="email" v-model="user.email">
                     </div>
                     <div>
                         <label>Роль:</label><br>
