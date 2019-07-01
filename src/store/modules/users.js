@@ -68,6 +68,18 @@ const actions ={
         else
             return; 
     },
+    async getUser({rootState},id){
+        try{
+            const token = localStorage.getItem('token')
+            const response = await axios.get(rootState.apiPrefix + `/user/${id}`,
+                { headers: { 'Authorization': token }}
+            )
+            return response.data;
+        }
+        catch(err) {
+            throw(err);
+        }
+    },
     async addUser({commit, rootState}, user){
         try{
             const token = localStorage.getItem('token')

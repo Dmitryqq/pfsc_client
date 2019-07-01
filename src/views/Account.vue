@@ -1,47 +1,54 @@
 <template>
-     <div class="account">
-        <div class="container">
-            <div class="row">
-                <div v-if="currentUser" class="col-8">
-                    <div>
-                        <label>id:</label><br>
-                        <input class="form-control-sm" type="text" v-model="user.id" disabled>
-                    </div>
-                    <div>
-                        <label>Username:</label><br>
-                        <input class="form-control-sm" type="text" v-model="user.username">
-                    </div>
-                    <div>
-                        <label>Password:</label><br>
-                        <input class="form-control-sm" type="password" v-model="user.password">
-                    </div>
-                    <div>
-                        <label>Name:</label><br>
-                        <input class="form-control-sm" type="text" v-model="user.name">
-                    </div>
-                    <div>
-                        <label>Email:</label><br>
-                        <input class="form-control-sm" type="email" v-model="user.email">
-                    </div>
-                    <div>
-                        <label>Роль:</label><br>
-                        <input class="form-control-sm" type="text" v-model="user.role.roleName" disabled>
-                    </div>
-                    <button type="submit" class="btn btn-primary" @click="saveUser(user)">Сохранить</button>
-                    <p class="text-center">Если изменение пароля не требуется, то оставьте поле пустым</p>
+     <div class="account view">
+        <Navbar />
+        <Loader v-if="isLoading" />
+        <div v-else class="col-sm-6 col-md-4 mx-auto my-5">
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">id:</label>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="text" v-model="user.id" disabled>
                 </div>
             </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Username:</label>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="text" v-model="user.username">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Password:</label>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="password" v-model="user.password">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Name:</label>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="text" v-model="user.name">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Email:</label>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="email" v-model="user.email">
+                </div>
+            </div>
+            <div class="text-center my-5">
+                <button type="submit" class="btn btn-sm btn-primary" @click="saveUser(user)">Сохранить</button>
+            </div>
+            <p class="text-center">Если изменение пароля не требуется, то оставьте поле пустым</p>
         </div>
     </div>
 </template>
 
 <script>
 import Navbar from '@/components/Navbar.vue'
-import Menu from '../components/Menu.vue'
+import Loader from '@/components/Loader.vue'
 export default {
+    name: 'Account',
     components: {
         Navbar,
-        Menu
+        Loader
     },
     data: function(){
         return {
@@ -59,33 +66,19 @@ export default {
     computed:{
         userId() {
             return this.$store.state.users.user.id;
-        },
-        users(){
-            return this.$store.state.users.users;
-        },
-        currentUser(){
-            try{
-                var list = this.users.filter(item => {
-                    return item.id == this.userId;
-                });
-                this.user=list[0];
-                this.user.password = '';
-                return this.user;
-            }
-            catch(err){
-                return;
-            }
         }
     },
     created(){
         this.$store.dispatch('users/decodeUser');
-        this.getUsers();
+        this.getUser();
     },
     methods: {
-        getUsers () {
+        getUser() {
             this.isLoading = true;
-            this.$store.dispatch('users/getUsers')
-            .then(()=>{
+            this.$store.dispatch('users/getUser', this.userId)
+            .then((res)=>{
+                this.user = res;
+                this.user.password = ''
                 this.isLoading = false; 
             })
             .catch(err=>{
@@ -107,13 +100,3 @@ export default {
     }
 }
 </script>
-<style scoped>
-table{
-    width: 50%;
-    border-collapse: collapse;
-    overflow-x: auto;
-}
-.col{
-    width: 20%;
-}
-</style>

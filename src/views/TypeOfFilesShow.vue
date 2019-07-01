@@ -8,7 +8,7 @@
             <div class="alert alert-success" v-if="success">
                 {{success}}
             </div>
-            <table class="table table-sm">
+            <table class="table table-sm table-responsive">
                 <thead>
                     <tr>
                         <th>№</th>
