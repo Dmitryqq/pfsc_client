@@ -22,6 +22,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                             <router-link to="/dashboard" class="dropdown-item">Настройки</router-link>
+                            <router-link to="/help" class="dropdown-item">Справка</router-link>
                             <a href="" class="dropdown-item" @click="logout">Выйти</a>
                         </div>
                     </li>

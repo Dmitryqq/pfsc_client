@@ -72,7 +72,12 @@ const router = new Router({
         name: 'commit',
         component: () => import('./views/Commit.vue'),
         meta: {requiresAuth: true}
-      }
+      },
+      {
+        path: '/help',
+        name: 'help',
+        component: () => import('./views/HelpPage.vue')
+      },
     ]
   })
 
@@ -96,19 +101,19 @@ const router = new Router({
     if(!to.meta.roles)                                        //если нет ограничения на роль пользователя
       return next()                                           //переход на страницу
     if(to.meta.roles.includes('admin')) {                     //если доступ только для администратора
-      if(dtoken.role.name == "Admin")                                   //проверка роли
+      if(dtoken.role.roleName == "Admin")                                   //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
         return next({path: '/login'})                         //переадресация на страницу ошибки
     }
     if(to.meta.roles.includes('adminABD')) {                  //если доступ только для загрузчика
-      if(dtoken.role.name == "Admin ABD" )                    //проверка роли
+      if(dtoken.role.roleName == "Admin ABD" )                    //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
         return next({path: '/login'})                         //переадресация на страницу ошибки
     }
-    if(to.meta.roles.includes('user')) {                      //если доступ только для загрузчика
-      if(dtoken.role.name == "User")                          //проверка роли
+    if(to.meta.roles.includes('user')) {                     //если доступ только для загрузчика
+      if(dtoken.role.roleName == "User")                          //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
         return next({path: '/login'})                         //переадресация на страницу ошибки

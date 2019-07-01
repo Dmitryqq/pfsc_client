@@ -31,6 +31,10 @@
                         <label>Email:</label><br>
                         <input class="form-control-sm" type="email" v-model="user.email"><br>
                     </div>
+                    <div>
+                        <label>Роль:</label><br>
+                        <input class="form-control-sm" type="text" v-model="user.role.roleName" disabled>
+                    </div>
                     <button type="submit" class="btn btn-primary" @click="saveUser(user)">Сохранить</button>
                     <p class="text-center">Если изменение пароля не требуется, то оставьте поле пустым</p>
                 </div>
