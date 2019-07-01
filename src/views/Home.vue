@@ -59,6 +59,7 @@ export default {
 <style>
 .add-btn{
     margin-bottom: 20px;
+    width: 80px;
 }
 .home {
     min-width: 100%;

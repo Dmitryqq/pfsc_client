@@ -112,7 +112,7 @@ const router = new Router({
       else                                                    //иначе
         return next({path: '/login'})                         //переадресация на страницу ошибки
     }
-    if(to.meta.roles.includes('user')) {                     //если доступ только для загрузчика
+    if(to.meta.roles.includes('user')) {                      //если доступ только для загрузчика
       if(dtoken.role.roleName == "User")                          //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе

@@ -1,9 +1,10 @@
 <template>
-     <div class="configs">
-        <Navbar/>
-        <Menu/>
-        <div class="col-md-7 mx-auto my-5">
-            <table class="table table-sm">
+     <div class="configs view">
+        <Loader v-if="isLoading"/>
+        <div class="alert alert-danger" role="alert" v-if="error && !isLoading">
+            {{error}}
+        </div>
+        <table class="table table-sm mx-auto" v-if="!isLoading">
             <tr>
                 <td><b>№</b></td>
                 <td><b>Название</b></td>
@@ -13,22 +14,18 @@
                 <td>{{role.roleName}}</td>
             </tr>
         </table>
-        </div>
     </div>
 </template>
 
 <script>
-import Navbar from '@/components/Navbar.vue'
-import Menu from '../components/Menu.vue'
+import Loader from '@/components/Loader.vue'
 export default {
-    components: {
-        Navbar,
-        Menu
+    components:{
+        Loader
     },
     data: function(){
         return {        
             isLoading: false,
-            success: null,
             error: null
         }
     },

@@ -65,7 +65,7 @@ export default {
     font-weight: 400;
     margin-left:10px;
 }
-.form-control{
+.navbar .form-control{
     margin-right:20px !important;
 }
 .bd-navbar{
