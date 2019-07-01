@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { type } from 'os';
 
 const state = {
     typeOfFiles: []
@@ -25,7 +24,6 @@ const actions ={
     async addTypeOfFile({commit, rootState}, typeOfFile){
         try{
             const token = localStorage.getItem('token')
-            console.log(typeOfFile)
             const response = await axios.post(rootState.apiPrefix + `/typeOfFile`, typeOfFile,
                 { headers: { 'Authorization': 'Bearer '+ token }}
             )

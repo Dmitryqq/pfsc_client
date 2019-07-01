@@ -47,7 +47,7 @@
             </table>        
             
             <div class="text-center" v-if="editMode">
-                <button class="btn btn-primary  my-3" @click="showModal(0)">
+                <button class="btn btn-primary  my-3" @click="updateCommit">
                     Обновить
                 </button> 
             </div>
@@ -67,12 +67,12 @@
                 </div>
                 <div class="card-body" v-if="fileType.files.length">
                     <table class="table table-sm table-borderless" style="margin-bottom:0">
-                        <tr v-for="(file,index) in fileType.files" :key="file.id">
-                            <td>{{index+1}}</td>
+                        <tr v-for="(file,i) in fileType.files" :key="file.id">
+                            <td>{{i+1}}</td>
                             <td @click="getFile(file.id,getFileName(file.path))" class="file-link">{{getFileName(file.path)}}</td>
                             <td class="text-secondary" style="font-size:.8rem;vertical-align:middle">{{file.createDate}}</td>
                             <td v-if="checkEnabled(fileType)">
-                                <label class="icon-btn" @click="showModal(1, file)">
+                                <label class="icon-btn" @click="deleteFile(file,i,index)">
                                     <i class="fas fa-trash"></i>
                                 </label>
                             </td>
@@ -82,16 +82,15 @@
             </div>
 
             <div class="text-center my-4" v-if="isAdmin && commit.status==null">
-                <button type="button" class="btn btn-primary mx-3" @click="showModal(2)">Принять</button>
-                <button type="button" class="btn btn-danger mx-3" @click="showModal(3)">Отклонить</button>
+                <button type="button" class="btn btn-primary mx-3" @click="acceptCommit">Принять</button>
+                <button type="button" class="btn btn-danger mx-3" @click="showModal">Отклонить</button>
             </div>
 
         </div>
-        <Modal :title="modal.title" :button="modal.button" ref="myModal" @clickHandler="confirm(modal.button)">
-            <div class="form-group" v-if="showReject">
+        <Modal title="Причина отклонения" button="Отклонить" ref="myModal" @clickHandler="confirm()">
+            <div class="form-group">
                 <textarea class="form-control" cols="" rows="7" v-model="rejectMessage"></textarea>
             </div>
-            <p v-else>{{modal.body}} {{file.path?getFileName(file.path) : ''}} ?</p>
         </Modal>
     </div>
 </template>
@@ -102,6 +101,7 @@ import Modal from '@/components/Modal.vue'
 import Loader from '@/components/Loader.vue'
 import Popover from '@/components/Popover.vue'
 import { Promise } from 'q';
+import { setTimeout } from 'timers';
 
 export default {
     name: 'Commit',
@@ -179,7 +179,7 @@ export default {
             this.sendFiles(this.commit.fileTypes[index].id, selectedFiles)
             .then(()=>{
                 this.getCommit();
-                this.success= 'Файл(ы) успешно добавлен(ы)'
+                this.showSuccess('Файл(ы) успешно добавлен(ы)');
             })
             .catch(err=>{
                 this.error = err.message;
@@ -205,88 +205,65 @@ export default {
                 });
             })
         },
-        showModal(i,file = {}){
+        showModal(){
             this.error = '';
             this.success = '';
-            this.showReject = false;
-            this.file = file;
-            if(i==0){
-                this.modal.title = 'Подтверждение действия';
-                this.modal.body = 'Вы действительно хотите обновить накат';
-                this.modal.button = 'Обновить';
-            }
-            else if(i==1){
-                this.modal.title = 'Подтверждение действия';
-                this.modal.body = 'Вы действительно хотите удалить файл';
-                this.modal.button = 'Удалить';
-            }
-            else if(i==2){
-                this.modal.title = 'Подтверждение действия';
-                this.modal.body = 'Вы действительно хотите принять накат';
-                this.modal.button = 'Принять';
-            }
-            else if(i==3){
-                this.modal.title = 'Причина отклонения';
-                this.showReject = true;
-                this.modal.button = 'Отклонить';
-            }
             this.$refs['myModal'].show();
         },
-        confirm(button){
-            if(button == 'Удалить')
-                this.deleteFile();
-            else if(button == 'Обновить')
-                this.updateCommit();
-            else if(button == 'Принять')
-                this.acceptCommit();
-            else if(button == 'Отклонить')
-                this.rejectCommit();
+        confirm(){
+            this.rejectCommit();
         },
-        deleteFile(){
-            this.isLoading = true;
-            this.$store.dispatch('commits/deleteFile',this.file.id)
-            .then(()=>{
-                this.getCommit();
-                this.success= 'Файл успешно удален'
-            })
-            .catch(err=> {
-                this.error = err.message;
-            })
-            .finally(()=>{
-                this.isLoading = false;
-            })
+        deleteFile(file,fileInd,fileTypeInd){
+            if(confirm("Подтвердите удаление файла '" + this.getFileName(file.path) + "'")){
+                this.isLoading = true;
+                this.$store.dispatch('commits/deleteFile',file.id)
+                .then(()=>{
+                    this.commit.fileTypes[fileTypeInd].files.splice(fileInd,1);
+                    this.showSuccess('Файл успешно удален');
+                })
+                .catch(err=> {
+                    this.error = err.message;
+                })
+                .finally(()=>{
+                    this.isLoading = false;
+                })
+            }
         },
         updateCommit(){
             if(this.newCommit.description != '') {
                 if(this.commit.description!=this.newCommit.description || this.commit.markId!= this.newCommit.markId)
-                    this.isLoading = true;
-                    this.$store.dispatch('commits/updateCommit',this.newCommit)
-                    .then(()=>{
-                        this.success= 'Накат успешно обновлен'
-                    })
-                    .catch(err=> {
-                        this.error = err.message;
-                    })
-                    .finally(()=>{
-                        this.isLoading = false;
-                    })
+                    if(confirm("Подтвердите обновление наката")){
+                        this.isLoading = true;
+                        this.$store.dispatch('commits/updateCommit',this.newCommit)
+                        .then(()=>{
+                            this.showSuccess('Накат успешно обновлен');
+                        })
+                        .catch(err=> {
+                            this.error = err.message;
+                        })
+                        .finally(()=>{
+                            this.isLoading = false;
+                        })
+                    }
             }
             else
                 this.error = 'Заполните поле описание!';
         },
         acceptCommit(){
-            this.isLoading = true;
-            this.$store.dispatch('commits/acceptCommit',this.commit.id)
-            .then(()=>{
-                this.getCommit();
-                this.success = 'Накат успешно принят';
-            })
-            .catch(err=>{
-                this.error = err.message;
-            })
-            .finally(()=>{
-                this.isLoading = false;
-            })
+            if(confirm("Подтвердите принятие наката")){
+                this.isLoading = true;
+                this.$store.dispatch('commits/acceptCommit',this.commit.id)
+                .then(()=>{
+                    this.getCommit();
+                    this.showSuccess('Накат успешно принят');
+                })
+                .catch(err=>{
+                    this.error = err.message;
+                })
+                .finally(()=>{
+                    this.isLoading = false;
+                })
+            }
         },
         rejectCommit(){
             if(this.rejectMessage != ''){
@@ -294,7 +271,7 @@ export default {
                 this.$store.dispatch('commits/rejectCommit',[this.commit.id,this.rejectMessage])
                 .then(()=>{
                     this.getCommit();
-                    this.success = 'Накат успешно отклонен';
+                    this.showSuccess('Накат успешно отклонен');
                 })
                 .catch(err=>{
                     this.error = err.message;
@@ -319,6 +296,10 @@ export default {
         },
         getFile(id,name){
             this.$store.dispatch('commits/getFile',[id,name]);
+        },
+        showSuccess(message){
+            this.success = message;
+            setTimeout(()=>{this.success = null},3000);
         }
     },
     data(){
@@ -326,15 +307,8 @@ export default {
             commit:{},
             error: '',
             success: '',
-            file: {},
-            modal: {
-                title: '',
-                body: '',
-                button: ''
-            },
             editMode: false,
             newCommit: {},
-            showReject: null,
             rejectMessage: '',
             isLoading: false
         }

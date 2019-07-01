@@ -217,7 +217,7 @@ export default {
                 }
                 else if(this.errors.length < 1){
                     this.clearData();
-                    this.success="Накат успешно добавлен";
+                    this.showSuccess("Накат успешно добавлен");
                 }
                 this.showFileNames = true;
                 
@@ -243,6 +243,10 @@ export default {
             this.errors = [];
             this.success = '';
             this.validFiles = {};
+        },
+        showSuccess(message){
+            this.success = message;
+            setTimeout(()=>{this.success = null},3000);
         }
     },
     data(){

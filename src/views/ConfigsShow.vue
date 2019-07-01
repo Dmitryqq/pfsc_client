@@ -1,24 +1,31 @@
 <template>
-    <div class="configs">
-        <Navbar/>
-        <Menu/>
-        <div class="col-md-7 mx-auto my-5">
+    <div class="configs view">
+        <Loader v-if="isLoading"/>
+        <div v-else>
+            <div class="alert alert-danger" role="alert" v-if="error">
+                {{error}}
+            </div>
+            <div class="alert alert-success" v-if="success">
+                {{success}}
+            </div>
             <table class="table table-sm">
+                <thead>
                 <tr>
-                    <td><b>№</b></td>
-                    <td><b>Имя</b></td>
-                    <td><b>Значение</b></td>
-                    <td><b>Описание</b></td>
-                    <td></td>
-                    <td></td>
+                    <th>№</th>
+                    <th>Имя</th>
+                    <th>Значение</th>
+                    <th>Описание</th>
+                    <th></th>
+                    <th></th>
                 </tr>
+                </thead>
                 <tr v-for="config in configs" :key="config.id">
                     <td>{{config.id}}</td>
-                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control-sm" type="text"  v-model="config.name" required></td>
+                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control form-control-sm" type="text"  v-model="config.name" required></td>
                     <td v-else>{{config.name}}</td>
-                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control-sm" type="text"  v-model="config.value" required></td>
+                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control form-control-sm" type="text"  v-model="config.value" required></td>
                     <td v-else>{{config.value}}</td>
-                    <td v-if="editMode && config.id == seletedConfig.id"><textarea class="form-control" type="text" rows="1" v-model="config.description"></textarea></td>
+                    <td v-if="editMode && config.id == seletedConfig.id"><input class="form-control form-control-sm" type="text" rows="1" v-model="config.description"></td>
                     <td v-else>{{config.description}}</td>
                     <td v-if="editMode && config.id == seletedConfig.id">
                         <span class="icon-btn" >
@@ -35,24 +42,21 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input class="form-control-sm" type="text"  v-model="config.name" required></td>
-                    <td><input class="form-control-sm col-sm-12" type="text" v-model="config.value"></td>
-                    <td><textarea class="form-control" type="text" rows="1" v-model="config.description"></textarea></td>
-                    <button type="submit" class="btn btn-primary" @click="addConfig">Добавить</button>
+                    <td><input class="form-control form-control-sm" type="text"  v-model="config.name" required></td>
+                    <td><input class="form-control form-control-sm col-sm-12" type="text" v-model="config.value"></td>
+                    <td><input class="form-control form-control-sm" type="text" rows="1" v-model="config.description"></td>
+                    <td><button type="submit" class="btn btn-sm btn-primary" @click="addConfig">Добавить</button></td>
                 </tr>
             </table>
-            <modal v-if="deleteMode" title="Удаление" message="Вы действительно хотите конфигурацию?"  @response="confirmDelete"/>
         </div>
     </div>
 </template>
 
 <script>
-import Navbar from '@/components/Navbar.vue'
-import Menu from '../components/Menu.vue'
+import Loader from '@/components/Loader.vue'
 export default {
-    components: {
-        Navbar,
-        Menu
+    components:{
+        Loader
     },
     data: function(){
         return {
@@ -81,21 +85,19 @@ export default {
         getConfigs () {
             this.isLoading = true;
             this.$store.dispatch('configs/getConfigs')
-            .then(()=>{
-                this.isLoading = false; 
-            })
             .catch(err=>{
-                this.isLoading = false; 
                 this.error = err.message;
-            })       
+            })  
+            .finally(()=>{
+                this.isLoading = false; 
+            })     
         },
         addConfig(){  
             this.error = null;
             if(this.config.name.length>0 && this.config.value.length>0) {
                     this.$store.dispatch('configs/addConfig',  this.config)
                     .then(()=>{ 
-                    this.success = true;
-                    setTimeout(()=>{this.success = false},3000);
+                    this.showSuccess('Конфигурация успешно добавлена');
                     this.clearForm()
                 })
                 .catch((err)=>{
@@ -104,12 +106,11 @@ export default {
             }
         },
         deleteConfig(config){
-            if(confirm("Подтвердите удаление элемента "+config.name)){
+            if(confirm("Подтвердите удаление элемента '"+config.name+"'")){
                 this.$store.dispatch('configs/deleteConfig', config.id)
-                .then((res)=>{ 
+                .then(()=>{ 
                     this.error = null;
-                    this.success =res;
-                    setTimeout(()=>{this.success = null},3000);
+                    this.showSuccess('Конфигурация успешно удалена');
                 })
                 .catch(err=>{
                     this.error = err.message;
@@ -117,15 +118,16 @@ export default {
             }
         },
         updateConfig(config){
-            this.$store.dispatch('configs/updateConfig', config)
-            .then((res)=>{
-                this.editMode = false;
-                this.success = res;
-                setTimeout(()=>{this.success = null},3000);
-            })
-            .catch(err=>{
-                this.error = err.message;
-            })
+            if(confirm("Подтвердите обновление элемента '"+config.name+"'")){
+                this.$store.dispatch('configs/updateConfig', config)
+                .then(()=>{
+                    this.showSuccess('Конфигурация успешно обновлена');
+                })
+                .catch(err=>{
+                    this.error = err.message;
+                })
+            }
+             this.editMode = false;
         },
         clearForm(){
             this.config.name = '';
@@ -138,6 +140,10 @@ export default {
         },
         disableEditMode(){
             this.editMode = false;
+        },
+        showSuccess(message){
+            this.success =  message;
+            setTimeout(()=>{this.success = null},3000);
         }
     }
 }
@@ -145,14 +151,6 @@ export default {
 
 <style scoped>
 
-table{
-    width: 100%;
-    border-collapse: collapse;
-    overflow-x: auto;
-}
-thead tr{
-    font-weight: bold;
-}
 td:nth-child(1){
     width: 1%;
 }
@@ -164,6 +162,9 @@ td:nth-child(3){
 }
 td:nth-child(4){
     width: 50%;
+}
+.form-group{
+    margin: 0 !important;
 }
 p {
     padding: 0  0 10px 0.75em;
