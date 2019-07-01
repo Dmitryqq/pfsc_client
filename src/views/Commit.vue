@@ -1,5 +1,5 @@
 <template>
-    <div class="commit">
+    <div class="commit view">
         <Navbar/>
         <Loader v-if="isLoading"/>
         <div class="col-md-7 mx-auto my-5" v-else>
@@ -56,11 +56,14 @@
                 <div class="card-header">
                     {{fileType.name}}
                     <span v-if="fileType.required && fileType.roleId == user.role.id" class="text-danger">*</span>
-                    <label class="icon-btn" v-if="fileType.files.length < fileType.maxAmount && checkEnabled(fileType)">
+                    <label class="icon-btn ml-3" v-if="fileType.files.length < fileType.maxAmount && checkEnabled(fileType)">
                         <input type="file" multiple @change="onFileChanged($event, index)"/>
                         <i class="fas fa-plus"></i>
                     </label>
-                    <span class="text-secondary float-right mr-3">maximum {{fileType.maxAmount}} files</span>
+                    <Popover v-if="checkEnabled(fileType)">
+                        maximum: {{fileType.maxAmount}} file(s) <br>
+                        extensions: {{fileType.types}}
+                    </Popover>
                 </div>
                 <div class="card-body" v-if="fileType.files.length">
                     <table class="table table-sm table-borderless" style="margin-bottom:0">
@@ -97,6 +100,7 @@
 import Navbar from '@/components/Navbar.vue'
 import Modal from '@/components/Modal.vue'
 import Loader from '@/components/Loader.vue'
+import Popover from '@/components/Popover.vue'
 import { Promise } from 'q';
 
 export default {
@@ -104,7 +108,8 @@ export default {
     components: {
         Navbar,
         Modal,
-        Loader
+        Loader,
+        Popover
     },
     computed:{
         statuses(){
@@ -355,11 +360,5 @@ export default {
 }
 .commit .file-link:hover{
     text-decoration: underline;
-}
-.commit{
-    width: 100%;
-    height:100%;
-    display: flex;
-    flex-flow: column;
 }
 </style>

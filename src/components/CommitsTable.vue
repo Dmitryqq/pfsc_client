@@ -1,5 +1,6 @@
 <template>
-    <div class="commitsTable">
+    <div class="commitsTable view">
+        <div class="view">
         <table class="table table-sm table-hover">
             <thead>
                 <tr>
@@ -18,7 +19,7 @@
                 </th>
                 </tr>
             </thead>
-            <th colspan="6" v-if="!commits.length"><p class="text-secondary">Список пуст</p></th>
+            <th colspan="7" v-if="!commits.length"><p class="text-secondary">Список пуст</p></th>
             <tbody>
                 <tr v-for="(commit,i) in paginatedData" :key="commit.id" @click="$emit('showCommit',commit.id)">
                     <td>{{currentPage * itemsPerPage +i+1}}</td>
@@ -31,6 +32,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
         <Paginator :pageNumber="pageNumber" :currentPage="currentPage" @switchPage="switchPage" ref="myPaginator"/>
     </div>
 </template>
@@ -76,7 +78,6 @@ export default {
         dFilter(){    
             this.commits = this.dataSet;       
             this.showMarks=false;
-            this.$refs.myPaginator.reload();
             this.currentPage = 0;
         },
         switchPage(i){

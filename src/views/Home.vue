@@ -2,7 +2,7 @@
     <div class="home">
         <Navbar/>
         <Loader v-if="isLoading"/>
-        <div class="container my-5" v-else>
+        <div class="container my-5 view" v-else>
             <router-link to="/commit/new" class="btn btn-primary btn-sm add-btn" v-if="role && role.roleName=='User'">Добавить</router-link>
             <CommitsTable :dataSet="commits" @showCommit="clickListener"/>
         </div>
@@ -60,9 +60,9 @@ export default {
 .add-btn{
     margin-bottom: 20px;
 }
-.home{
-    width: 100%;
-    height:100%;
+.home {
+    min-width: 100%;
+    min-height: 100vh;
     display: flex;
     flex-flow: column;
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="commitAdd">
+    <div class="commitAdd view">
         <Navbar/>
         <Loader  v-if="isLoading"/>
         <div class="col-md-7 mx-auto my-5" v-else>
@@ -29,11 +29,15 @@
                 <div class="card-header">
                     {{fileType.name}}
                     <span v-if="fileType.required" class="text-danger">*</span>
-                    <label class="icon-btn" v-if="(!selectedFiles[fileType.id] || selectedFiles[fileType.id].length < fileType.maxAmount) && !validFiles[fileType.id]">
+                    <label class="icon-btn ml-3" v-if="(!selectedFiles[fileType.id] || selectedFiles[fileType.id].length < fileType.maxAmount) && !validFiles[fileType.id]">
                         <input type="file" multiple @change="onFileChanged($event, index)"/>
                         <i class="fas fa-plus"></i>
                     </label>
-                    <span class="text-secondary float-right mr-3">maximum {{fileType.maxAmount}} files</span>
+                    <Popover>
+                        maximum: {{fileType.maxAmount}} file(s) <br>
+                        extensions: {{fileType.types}}
+                    </Popover>
+                    <!-- <span class="text-secondary float-right mr-3">maximum {{fileType.maxAmount}} files</span> -->
                 </div>
                 <div class="card-body" v-if="showFileNames && selectedFiles[fileType.id] && selectedFiles[fileType.id].length">
                     <table class="table table-sm table-borderless" style="margin-bottom:0">
@@ -64,6 +68,7 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Loader from '@/components/Loader.vue'
+import Popover from '@/components/Popover.vue'
 import { mapGetters } from 'vuex'
 import { Promise } from 'q';
 import { setTimeout } from 'timers';
@@ -80,7 +85,8 @@ export default {
     name: 'Commit',
     components: {
         Navbar,
-        Loader
+        Loader,
+        Popover
     },
     computed:{
         marks(){
@@ -264,11 +270,5 @@ export default {
 <style>
 .commitAdd th{
     width: 150px;
-}
-.commitAdd{
-    width: 100%;
-    height:100%;
-    display: flex;
-    flex-flow: column;
 }
 </style>

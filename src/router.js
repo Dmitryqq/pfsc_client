@@ -56,7 +56,10 @@ const router = new Router({
         path: '/commit/new',
         name: 'addCommit',
         component: () => import('./views/CommitAdd.vue'),
-        meta: {requiresAuth: true}
+        meta: {
+          requiresAuth: true,
+          roles:['user']
+        }
       },
       {
         path: '/commit/:id',
@@ -73,8 +76,7 @@ const router = new Router({
     const token = localStorage.getItem('token')
     if ( token == null) {                                     //если нет токена в localStorage
       return next({
-        path: '/login',                                       //переадресация на страничку логина
-        query: { redirect: to.fullPath }                      //сохранение адреса назначения
+        path: '/login'                                        //переадресация на страничку логина
       })
     } 
     const dtoken = jwtDecode(localStorage.token);             //декодировка токена
@@ -94,7 +96,13 @@ const router = new Router({
         return next({path: '/login'})                         //переадресация на страницу ошибки
     }
     if(to.meta.roles.includes('adminABD')) {                  //если доступ только для загрузчика
-      if(dtoken.role.name == "Admin ABD" || dtoken.role.name ==  "Admin")             //проверка роли
+      if(dtoken.role.name == "Admin ABD" )                    //проверка роли
+        return next()                                         //переход на страницу
+      else                                                    //иначе
+        return next({path: '/login'})                         //переадресация на страницу ошибки
+    }
+    if(to.meta.roles.includes('user')) {                      //если доступ только для загрузчика
+      if(dtoken.role.name == "User")                          //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
         return next({path: '/login'})                         //переадресация на страницу ошибки

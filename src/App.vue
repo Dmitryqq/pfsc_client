@@ -33,16 +33,24 @@ html,body{
   height: 100%;
 }
 
+.view{
+  width: 100%;
+  height:100%;
+  display: flex;
+  flex-flow: column;
+  flex-grow: 1;
+}
+
 .icon-btn{
     float: right;
     font-size: 1rem;
 }
 .icon-btn i{
-  opacity: .5;
+  color: rgba(0, 0, 0, .5);
   cursor: pointer;
 }
 .icon-btn i:hover{
-    opacity: .8;
+  color: rgba(0, 0, 0, .8);
 }
 .icon-btn input[type="file"] {
     display: none;
