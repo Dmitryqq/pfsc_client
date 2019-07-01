@@ -31,7 +31,7 @@
                 </tr>
             </tbody>
         </table>
-        <Paginator :pageNumber="pageNumber" @switchPage="switchPage" ref="myPaginator"/>
+        <Paginator :pageNumber="pageNumber" :currentPage="currentPage" @switchPage="switchPage" ref="myPaginator"/>
     </div>
 </template>
 
@@ -71,7 +71,6 @@ export default {
         aFilter(status){
             this.commits = this.dataSet.filter(c=>c.status==status || status==this.statuses[0].name && c.status == null);
             this.showMarks=false;
-            this.$refs.myPaginator.reload();
             this.currentPage = 0;
         },
         dFilter(){    
@@ -95,6 +94,7 @@ export default {
     watch: {
         dataSet(newDataSet) {
             this.commits = newDataSet;
+            this.currentPage = 0;
         }
     },
     mounted(){

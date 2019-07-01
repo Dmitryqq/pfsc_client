@@ -22,12 +22,8 @@
 export default {
     name: 'Paginator',
     props: {
-        pageNumber: Number
-    },
-    data(){
-        return{
-            currentPage: 0
-        }
+        pageNumber: Number,
+        currentPage: Number
     },
     methods:{
         activeClass(i){
@@ -37,23 +33,17 @@ export default {
             }
         },
         goToPage(i){
-            this.currentPage = i
-            this.$emit('switchPage',this.currentPage);
+            this.$emit('switchPage',i);
         },
         goNext(){
             if(this.currentPage+1 < this.pageNumber ){
-                this.currentPage += 1;
-                this.$emit('switchPage',this.currentPage);
+                this.$emit('switchPage',this.currentPage+1);
             }
         },
         goPrev(){
             if(this.currentPage > 0){
-                this.currentPage -= 1;
-                this.$emit('switchPage',this.currentPage);
+                this.$emit('switchPage',this.currentPage-1);
             }
-        },
-        reload(){
-            this.currentPage = 0;
         }
     }
 }
