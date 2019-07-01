@@ -8,16 +8,19 @@
                     </a>
                 </li> -->
                 <li>
-                    <a href="/dashboard/users">Пользователи</a>
+                    <router-link to="/dashboard/account">Мой аккаунт</router-link>
                 </li>
                 <li>
-                    <a href="/dashboard/roles">Роли</a>
+                    <router-link to="/dashboard/users">Пользователи</router-link>
                 </li>
                 <li>
-                    <a href="/dashboard/configs">Конфиги</a>
+                    <router-link to="/dashboard/roles">Роли</router-link>
                 </li>
                 <li>
-                    <a href="/dashboard/filetypes">Типы файлов</a>
+                   <router-link to="/dashboard/configs">Конфиги</router-link>
+                </li>
+                <li>
+                    <router-link to="/dashboard/filetypes">Типы файлов</router-link>
                 </li>
             </ul>
         </div>

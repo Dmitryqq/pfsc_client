@@ -50,6 +50,12 @@ const router = new Router({
           component: () => import('./views/RolesShow.vue'),
           meta: {requiresAuth: true}
         },
+        {
+          path: 'account',
+          name: 'account',
+          component: () => import('./views/Account.vue'),
+          meta: {requiresAuth: true}
+        },
       ]
       },
       {
