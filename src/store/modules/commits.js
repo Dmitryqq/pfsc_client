@@ -1,4 +1,5 @@
-import axios from 'axios'
+import axios from '../../axiosGeneral'
+import axiosInstance from '../../axiosInstance'
 
 const state = {
     commits: [],
@@ -12,37 +13,28 @@ const state = {
 }
 
 const actions = {
-    async getCommits({commit,rootState}){
+    async getCommits({commit}){
         try{
-            const token = localStorage.getItem('token');
-            const response = await axios.get(rootState.apiPrefix + '/commit', 
-                { headers: { 'Authorization': token }}
-            )
+            const response = await axios.get('/commit')
             commit("setCommits",response.data);
         }
         catch(err) {
             throw(err);
         }
     },
-    async getCommit({rootState},id){
+    async getCommit(_,id){
         try{
-            const token = localStorage.getItem('token');
-            const response = await axios.get(rootState.apiPrefix + '/commit/' + id, 
-                { headers: { 'Authorization': token }}
-            )
+            const response = await axiosInstance.get(`/commit/${id}`)
             return response.data;
         }
         catch(err) {
             throw(err);
         }
     },
-    async searchCommits({commit,rootState},param){
+    async searchCommits({commit},param){
         if(param.length>0){
             try{
-                const token = localStorage.getItem('token');
-                const response = await axios.post(rootState.apiPrefix + '/commit/search', {param: param},
-                    { headers: { 'Authorization': token }}
-                )
+                const response = await axios.post('/commit/search', {param: param})
                 commit("setSearchResults",response.data);
             }
             catch(err) {
@@ -55,88 +47,58 @@ const actions = {
     async clearSearchResults({commit}){
         commit('clearSearchResults');
     },
-    async addCommit({commit,rootState},payload){
+    async addCommit({commit},payload){
         try{
-            const token = localStorage.getItem('token');
-            const response = await axios.post(rootState.apiPrefix + '/commit/', payload,
-                { headers: { 'Authorization': token }}
-            )
+            const response = await axios.post('/commit/', payload)
             commit("addCommit",response.data);
             return response.data.id;
         }
         catch(err) {
-            if(err.response.data)
-                throw(err.response.data);
-            else
-                throw(err)
+            throw(err)
         }
     },
-    async addFiles({rootState},formData){
+    async addFiles(_,formData){
         try{
-            const token = localStorage.getItem('token');
-            const response = await axios.post(rootState.apiPrefix + '/file/', formData,
-                { headers: { 'Content-Type': 'multipart/form-data', 'Authorization': token }}
+            const response = await axios.post('/file/', formData,
+                { headers: { 'Content-Type': 'multipart/form-data' }}
             )
             return response.data.length;
 
         }
         catch(err) {
-            if(err.response.data)
-                throw(err.response.data);
-            else
-                throw(err)
+            throw(err)
         }
     },
-    async deleteCommit({rootState},id){
+    async deleteCommit(_,id){
         try{
-            const token = localStorage.getItem('token');
-            await axios.delete(rootState.apiPrefix + '/commit/'+id, 
-                { headers: { 'Authorization': token }}
-            )
+            await axios.delete(`/commit/${id}`)
         }
         catch(err) {
-            if(err.response.data)
-                throw(err.response.data);
-            else
-                throw(err)
+            throw(err)
         }
     },
-    async deleteFile({rootState},id){
+    async deleteFile(_,id){
         try{
-            const token = localStorage.getItem('token');
-            await axios.delete(rootState.apiPrefix + '/file/'+id, 
-                { headers: { 'Authorization': token }}
-            )
+            await axios.delete(`/file/${id}`)
         }
         catch(err) {
-            if(err.response.data)
-                throw(err.response.data);
-            else
-                throw(err)
+            throw(err)
         }
     },
-    async updateCommit({rootState},payload){
+    async updateCommit(_,payload){
         try{
-            const token = localStorage.getItem('token');
-            await axios.put(rootState.apiPrefix + '/commit/'+payload.id, payload,
-                { headers: { 'Authorization': token }}
-            )
+            await axios.put('/commit/'+payload.id, payload)
         }
         catch(err) {
-            if(err.response.data)
-                throw(err.response.data);
-            else
-                throw(err)
+            throw(err)
         }
     },
-    async getFile({rootState},[id,name]){
+    async getFile(_,[id,name]){
         try{
-            const token = localStorage.getItem('token')
             const response = await axios({
-                url: rootState.apiPrefix + '/file/'+ id,
+                url: '/file/'+ id,
                 method: 'GET',
-                responseType: 'blob', // important
-                headers: { 'Authorization': token }
+                responseType: 'blob'
             })
             const ext = name.split('.');
             if(ext[1] == 'pdf'){
@@ -153,35 +115,23 @@ const actions = {
             }
         }
         catch(err) {
-            throw(err);
+            throw(err)
         }
     },
-    async acceptCommit({rootState},id){
+    async acceptCommit(_,id){
         try{
-            const token = localStorage.getItem('token');
-            await axios.get(rootState.apiPrefix + `/commit/${id}/accept`,
-                { headers: { 'Authorization': token }}
-            )
+            await axios.get(`/commit/${id}/accept`)
         }
         catch(err) {
-            if(err.response.data)
-                throw(err.response.data);
-            else
-                throw(err)
+            throw(err)
         }
     },
-    async rejectCommit({rootState},[id,text]){
+    async rejectCommit(_,[id,text]){
         try{
-            const token = localStorage.getItem('token');
-            await axios.post(rootState.apiPrefix + `/commit/${id}/reject`, {text},
-                { headers: { 'Authorization': token }}
-            )
+            await axios.post(`/commit/${id}/reject`, {text})
         }
         catch(err) {
-            if(err.response.data)
-                throw(err.response.data);
-            else
-                throw(err)
+            throw(err)
         }
     }
 }

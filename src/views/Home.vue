@@ -3,6 +3,9 @@
         <Navbar/>
         <Loader v-if="isLoading"/>
         <div class="container my-5 view" v-else>
+            <div class="alert alert-danger col-md-6 mx-auto" role="alert" v-if="error">
+                {{error}}
+            </div>
             <router-link to="/commit/new" class="btn btn-primary btn-sm add-btn" v-if="role && role.roleName=='User'">Добавить</router-link>
             <CommitsTable :dataSet="searchMode ? searchResults : commits" @showCommit="clickListener"/>
         </div>
@@ -23,7 +26,8 @@ export default {
     },
     data(){
         return{
-            isLoading: false
+            isLoading: false,
+            error: ''
         }
     },
     computed: {
@@ -44,6 +48,9 @@ export default {
         getCommits(){
             this.isLoading = true;
             this.$store.dispatch('commits/getCommits')
+            .catch(err=>{
+                this.error = err.message;
+            })
             .finally(()=>{
                 this.isLoading = false;
             })

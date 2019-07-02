@@ -1,17 +1,14 @@
-import axios from 'axios'
+import axios from '../../axiosGeneral'
 
 const state = {
     typeOfFiles: []
 }
 
 const actions ={
-    async getTypeOfFiles({state,rootState}){
+    async getTypeOfFiles({state}){
         if(state.typeOfFiles.length<1) {
             try{
-                const token = localStorage.getItem('token')
-                const response = await axios.get(rootState.apiPrefix + '/typeOfFile',
-                    { headers: { 'Authorization': token }}
-                )
+                const response = await axios.get('/typeOfFile')
                 state.typeOfFiles = response.data;
             }
             catch(err) {
@@ -21,51 +18,30 @@ const actions ={
         else
             return; 
     },
-    async addTypeOfFile({commit, rootState}, typeOfFile){
+    async addTypeOfFile({commit}, typeOfFile){
         try{
-            const token = localStorage.getItem('token')
-            const response = await axios.post(rootState.apiPrefix + `/typeOfFile`, typeOfFile,
-                { headers: { 'Authorization': 'Bearer '+ token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else
-                commit('addTypeOfFile', response.data)
+            const response = await axios.post(`/typeOfFile`, typeOfFile)
+            commit('addTypeOfFile', response.data)
         }
         catch(err){
             throw(err);
         }
     },
-    async deleteTypeOfFile({commit, rootState}, id){
+    async deleteTypeOfFile({commit}, id){
         try{
-            const token = localStorage.getItem('token')
-            const response = await axios.delete(rootState.apiPrefix + `/typeOfFile/`+ id,
-                { headers: { 'Authorization': token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else{
-                commit('deleteTypeOfFile', id)
-                return response.data.message
-            }
-                
+            const response = await axios.delete(`/typeOfFile/${id}`)
+            commit('deleteTypeOfFile', id)
+            return response.data.message         
         }
         catch(err){
             throw(err);
         }
     },
-    async updateTypeOfFile({commit,rootState}, typeOfFile){
+    async updateTypeOfFile({commit}, typeOfFile){
         try{
-            const token = localStorage.getItem('token')
-            const response = await axios.put(rootState.apiPrefix + `/typeOfFile/` + typeOfFile.id, typeOfFile,
-                { headers: { 'Authorization': token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else {
-                commit('updateTypeOfFile',response.data)
-                return true
-            }
+            const response = await axios.put(`/typeOfFile/${typeOfFile.id}`, typeOfFile)
+            commit('updateTypeOfFile',response.data)
+            return true
         }
         catch(err){
             throw(err);

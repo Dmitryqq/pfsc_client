@@ -142,6 +142,8 @@ export default {
                         this.newCommit.markId = this.commit.markId;
                     }
                 })
+                .catch(err => {
+                })
                 .finally(()=>{
                     this.isLoading = false;
                 })

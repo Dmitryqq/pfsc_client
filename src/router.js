@@ -93,6 +93,30 @@ const router = new Router({
         name: 'help',
         component: () => import('./views/HelpPage.vue')
       },
+      {
+        path: '/forbidden',
+        name: 'forbidden',
+        component: () => import('./views/ForbiddenPage.vue')
+      },
+      {
+        path: '/servererror',
+        name: 'servererror',
+        component: () => import('./views/ServerErrorPage.vue')
+      },
+      {
+        path: '/badrequest',
+        name: 'badrequest',
+        component: () => import('./views/BadRequestPage.vue')
+      },
+      {
+        path: '/notfound',
+        name: 'notfound',
+        component: () => import('./views/NotFoundPage.vue')
+      },
+      {
+        path: '*',
+        redirect: '/notfound'
+      }
     ]
   })
 
@@ -119,19 +143,19 @@ const router = new Router({
       if(dtoken.role.roleName == "Admin")                                   //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
-        return next({path: '/login'})                         //переадресация на страницу ошибки
+        return next({path: '/forbidden'})                     //переадресация на страницу ошибки
     }
     if(to.meta.roles.includes('adminABD')) {                  //если доступ только для загрузчика
       if(dtoken.role.roleName == "Admin ABD" )                    //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
-        return next({path: '/login'})                         //переадресация на страницу ошибки
+        return next({path: '/forbidden'})                     //переадресация на страницу ошибки
     }
     if(to.meta.roles.includes('user')) {                      //если доступ только для загрузчика
-      if(dtoken.role.roleName == "User")                          //проверка роли
+      if(dtoken.role.roleName == "User")                      //проверка роли
         return next()                                         //переход на страницу
       else                                                    //иначе
-        return next({path: '/login'})                         //переадресация на страницу ошибки
+        return next({path: '/forbidden'})                     //переадресация на страницу ошибки
     } 
   })
 

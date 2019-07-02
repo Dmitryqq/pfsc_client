@@ -1,17 +1,14 @@
-import axios from 'axios'
+import axios from '../../axiosGeneral'
 
 const state = {
     configs: []
 }
 
 const actions = {
-    async getConfigs({state,rootState}){
+    async getConfigs({state}){
         if(state.configs.length<1) {
             try{
-                const token = localStorage.getItem('token')
-                const response = await axios.get(rootState.apiPrefix + '/config',
-                    { headers: { 'Authorization': token }}
-                )
+                const response = await axios.get('/config')
                 state.configs = response.data;
             }
             catch(err) {
@@ -21,51 +18,30 @@ const actions = {
         else
             return; 
     },
-    async addConfig({commit, rootState}, config){
+    async addConfig({commit}, config){
         try{
-            const token = localStorage.getItem('token')
-            const response = await axios.post(rootState.apiPrefix + `/config`, config,
-                { headers: { 'Authorization': token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else
-                commit('addConfig',response.data)
+            const response = await axios.post(`/config`, config)
+            commit('addConfig',response.data)
         }
         catch(err){
             throw(err);
         }
     },
-    async deleteConfig({commit, rootState}, id){
-        try{
-            const token = localStorage.getItem('token')
-            const response = await axios.delete(rootState.apiPrefix + `/config/`+ id,
-                { headers: { 'Authorization': token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else{
-                commit('deleteConfig', id)
-                return response.data.message
-            }
-                
+    async deleteConfig({commit}, id){
+        try{    
+            const response = await axios.delete(`/config/${id}`)
+            commit('deleteConfig', id);
+            return response.data.message;        
         }
         catch(err){
             throw(err);
         }
     },
-    async updateConfig({commit,rootState}, config){
+    async updateConfig({commit}, config){
         try{
-            const token = localStorage.getItem('token')
-            const response = await axios.put(rootState.apiPrefix + `/config/` + config.id, config,
-                { headers: { 'Authorization': token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else {
-                commit('updateConfig', response.data)
-                return true;
-            }
+            const response = await axios.put(`/config/${config.id}`, config)
+            commit('updateConfig', response.data)
+            return true;
         }
         catch(err){
             throw(err);

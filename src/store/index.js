@@ -17,8 +17,5 @@ export default new Vuex.Store({
     configs,
     typeOfFiles,
     marks
-  },
-  state:{
-      apiPrefix: 'http://localhost:8080'
   }
 })

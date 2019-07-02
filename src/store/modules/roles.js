@@ -1,17 +1,14 @@
-import axios from 'axios'
+import axios from '../../axiosGeneral'
 
 const state = {
     roles: []
 }
 
 const actions = {
-    async getRoles({state,rootState}){
+    async getRoles({state}){
         if(state.roles.length<1) {
             try{
-                const token = localStorage.getItem('token')
-                const response = await axios.get(rootState.apiPrefix + '/role', 
-                    { headers: { 'Authorization': 'Bearer '+ token }}
-                )
+                const response = await axios.get('/role')
                 state.roles = response.data;
             }
             catch(err) {
@@ -23,13 +20,9 @@ const actions = {
     }
 }
 
-const mutations = {
-    
-}
 
 export default{
     namespaced: true,
     state,
-    actions,
-    mutations
+    actions
 }

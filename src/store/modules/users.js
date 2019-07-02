@@ -1,4 +1,5 @@
-import axios from 'axios'
+import axios from '../../axiosGeneral'
+import axiosInstance from '../../axiosInstance'
 import jwtDecode from 'jwt-decode'
 
 const state = {
@@ -7,9 +8,9 @@ const state = {
 }
 
 const actions ={
-    async authUser({rootState, dispatch}, authData){
+    async authUser({dispatch}, authData){
         try{
-            const response = await axios.post(rootState.apiPrefix + `/login`, authData)
+            const response = await axiosInstance.post(`/login`, authData)
             let token = response.headers['authorization'];
             if (token) {
                 const dtoken = jwtDecode(token);
@@ -26,17 +27,11 @@ const actions ={
         }
         catch(err) {
             localStorage.removeItem('token');
-            var exists = true;
-            try {
-                if (err.response.status)
-                    exists = true;
-            } catch(e) { exists = false; }
-            if(exists){
-                if(err.response.status == "403")
-                    throw new Error("Неверный логин или пароль")
+            if(err.status == "403"){
+                throw new Error("Неверный логин или пароль")
             }
             else
-                throw(err);
+                throw(err)
         }
     },
     async decodeUser({commit}){
@@ -52,13 +47,10 @@ const actions ={
     Auth(){
         return localStorage.getItem('token')?true:false;
     },
-    async getUsers({state,rootState}){
+    async getUsers({state}){
         if(state.users.length<1) {
-            try{
-                const token = localStorage.getItem('token')
-                const response = await axios.get(rootState.apiPrefix + '/user',
-                    { headers: { 'Authorization': token }}
-                )
+            try{ 
+                const response = await axios.get('/user')
                 state.users = response.data;
             }
             catch(err) {
@@ -68,63 +60,40 @@ const actions ={
         else
             return; 
     },
-    async getUser({rootState},id){
-        try{
-            const token = localStorage.getItem('token')
-            const response = await axios.get(rootState.apiPrefix + `/user/${id}`,
-                { headers: { 'Authorization': token }}
-            )
+    async getUser(_,id){
+        try{ 
+            const response = await axios.get(`/user/${id}`)
             return response.data;
         }
         catch(err) {
             throw(err);
         }
     },
-    async addUser({commit, rootState}, user){
+    async addUser({commit}, user){
         try{
-            const token = localStorage.getItem('token')
-            const response = await axios.post(rootState.apiPrefix + `/user`, user,
-                { headers: { 'Authorization': 'Bearer '+ token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else
-                commit('addUser',response.data)
+            const response = await axios.post(`/user`, user)
+            commit('addUser',response.data)
         }
         catch(err){
             throw(err);
         }
     },
-    async deleteUser({commit, rootState}, id){
+    async deleteUser({commit}, id){
         try{
-            const token = localStorage.getItem('token')
-            const response = await axios.delete(rootState.apiPrefix + `/user/`+ id,
-                { headers: { 'Authorization': token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else{
-                commit('deleteUser', id)
-                return response.data.message
-            }
+            const response = await axios.delete(`/user/`+ id)
+            commit('deleteUser', id)
+            return response.data.message
                 
         }
         catch(err){
             throw(err);
         }
     },
-    async updateUser({commit,rootState}, user){
-        try{
-            const token = localStorage.getItem('token')
-            const response = await axios.put(rootState.apiPrefix + `/user/` + user.id, user,
-                { headers: { 'Authorization': token }}
-            )
-            if(response.data.error)
-                throw new Error(response.data.error)
-            else {
-                commit('updateUser',response.data)
-                return true;
-            }
+    async updateUser({commit}, user){
+        try{      
+            const response = await axios.put(`/user/` + user.id, user)
+            commit('updateUser',response.data)
+            return true;
         }
         catch(err){
             throw(err);

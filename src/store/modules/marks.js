@@ -1,17 +1,14 @@
-import axios from 'axios'
+import axios from '../../axiosGeneral'
 
 const state = {
     marks: []
 }
 
 const actions = {
-    async getMarks({commit,rootState}){
+    async getMarks({commit}){
         if(state.marks.length<1) {
             try{
-                const token = localStorage.getItem('token')
-                const response = await axios.get(rootState.apiPrefix + '/mark', 
-                    { headers: { 'Authorization': 'Bearer '+ token }}
-                )
+                const response = await axios.get('/mark')
                 commit('setMarks',response.data);
             }
             catch(err) {
