@@ -11,11 +11,11 @@
             </div>
             <div class="form-group">
                 <label >Логин</label>
-                <input type="text" class="form-control" placeholder="Логин" v-model="user.username">
+                <input type="text" class="form-control" placeholder="Логин" v-model="user.username" @keyup="loginEnter($event)">
             </div>
             <div class="form-group">
                 <label>Пароль</label>
-                <input type="password" class="form-control" placeholder="Пароль" v-model="user.password">
+                <input type="password" class="form-control" placeholder="Пароль" @keyup="passwordEnter($event)" v-model="user.password" ref="passwordInput">
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-primary" @click="auth" style="margin-top: 10%">Войти</button>
@@ -42,6 +42,16 @@ export default {
         }
     },
     methods:{
+        loginEnter(e){
+            if (e.keyCode == 13) {
+                this.$refs.passwordInput.focus();
+            }
+        },
+        passwordEnter(e){
+            if (e.keyCode == 13) {
+                this.auth();
+            }
+        },
         auth(){
             this.$store.dispatch('users/authUser',this.user)
             .then(()=>{
