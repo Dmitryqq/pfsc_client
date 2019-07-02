@@ -4,7 +4,7 @@
         <Loader v-if="isLoading"/>
         <div class="container my-5 view" v-else>
             <router-link to="/commit/new" class="btn btn-primary btn-sm add-btn" v-if="role && role.roleName=='User'">Добавить</router-link>
-            <CommitsTable :dataSet="commits" @showCommit="clickListener"/>
+            <CommitsTable :dataSet="searchMode ? searchResults : commits" @showCommit="clickListener"/>
         </div>
         
     </div>
@@ -32,6 +32,12 @@ export default {
         },
         role() {
             return this.$store.state.users.user.role;
+        },
+        searchMode() {
+            return this.$store.state.commits.searchMode;
+        },
+        searchResults() {
+            return this.$store.state.commits.searchResults;
         }
     },
     methods:{
@@ -51,7 +57,8 @@ export default {
             this.getCommits();
     },
     beforeRouteLeave (to, from, next) {
-        this.$store.dispatch('commits/clearCommits');
+        if(this.searchMode)
+            this.$store.dispatch('commits/clearSearchResults');
         next();
     }
 }

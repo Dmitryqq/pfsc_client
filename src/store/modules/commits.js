@@ -6,7 +6,9 @@ const state = {
         { name : 'в ожидании', value: null, color:"badge-primary" },
         { name : 'принят', value: 'принят', color:"badge-success" },
         { name : 'отклонен', value: 'отклонен', color:"badge-danger" }
-    ]
+    ],
+    searchResults: [],
+    searchMode : false
 }
 
 const actions = {
@@ -35,19 +37,23 @@ const actions = {
         }
     },
     async searchCommits({commit,rootState},param){
-        try{
-            const token = localStorage.getItem('token');
-            const response = await axios.post(rootState.apiPrefix + '/commit/search', {param: param},
-                { headers: { 'Authorization': token }}
-            )
-            commit("setCommits",response.data);
-        }
-        catch(err) {
-            throw(err);
+        if(param.length>0){
+            try{
+                const token = localStorage.getItem('token');
+                const response = await axios.post(rootState.apiPrefix + '/commit/search', {param: param},
+                    { headers: { 'Authorization': token }}
+                )
+                commit("setSearchResults",response.data);
+            }
+            catch(err) {
+                throw(err);
+            }
+        }else{
+            commit('clearSearchResults');
         }
     },
-    async clearCommits({commit}){
-        commit('clearCommits');
+    async clearSearchResults({commit}){
+        commit('clearSearchResults');
     },
     async addCommit({commit,rootState},payload){
         try{
@@ -184,11 +190,17 @@ const mutations = {
     setCommits(state, commits) {
         state.commits = commits
     },
-    clearCommits(state) {
-        state.commits = [];
+    setSearchResults(state, commits){
+        state.searchResults = commits
+        state.searchMode = true;
+    },
+    clearSearchResults(state) {
+        state.searchMode = false;
+        state.searchResults = [];
     },
     addCommit(state, commit){
-        state.commits.push(commit);
+        if(state.commits.length > 0)
+            state.commits.unshift(commit);
     }
 }
 
