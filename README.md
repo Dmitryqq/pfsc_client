@@ -1,29 +1,41 @@
-# pfsc_client
+# Система учета накатов (клиент)
 
-## Project setup
+## Установка пакетов
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+## Режим разработчика
+
+### Установка пакета vue
+```
+npm install -g @vue/cli 
+```
+### Мгновенное компилирование 
+Запуск .js или .vue файла в режиме разработки без конфигурации
 ```
 npm run serve
 ```
+## Режим production
 
-### Compiles and minifies for production
+### Настройка порта
+Настройка проводится в файле **server.js**.
+```js 
+const port = process.env.PORT || 3000;
+```
+При размещении приложения на внешние хостинги "process.env.`PORT`" указывается согласно установленным правилам. Также можно задать порт явно.
+
+### Сборка целевого файла для публикации
 ```
 npm run build
 ```
+Каталог расположения файла по умолчанию dist/
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
+## Настройка взаимодействия c backend приложением
+Настройка проводится в файлах **src/axiosGeneral** и **src/axiosInstance**.<br>
+URL для обращения к backend указывается в строчке:
+```js
+baseURL: 'http://localhost:8080'
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
