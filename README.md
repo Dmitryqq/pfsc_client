@@ -39,10 +39,10 @@ npm start
 ```
 
 ## Настройка взаимодействия c backend приложением
-Настройка проводится в файлах **src/axiosGeneral** и **src/axiosInstance**.<br>
+Настройка проводится в файле **src/axios.js**.<br>
 URL для обращения к backend указывается в строчке:
 ```js
-baseURL: 'http://localhost:8080'
+const url = 'http://localhost:8080';
 ```
 
 
