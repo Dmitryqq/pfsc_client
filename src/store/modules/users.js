@@ -90,9 +90,18 @@ const actions ={
         }
     },
     async updateUser({commit}, user){
-        try{      
+        try{
+            var toClear = false;
             const response = await axios.put(`/user/` + user.id, user)
-            commit('updateUser',response.data)
+            if(state.users.length == 0){              //Если у пользователя не стейтов, то это или не админ, или у админа их нет
+                toClear = true;                     //Запоминаем что нужно будет очистить
+            }
+            const users = await axios.get('/user')
+            commit('setUsers', users.data);
+            commit('updateUser',response.data);      //Коммитим
+            if(toClear == true){                    //Если нужно опустошаем
+                state.users = []
+            }
             return true;
         }
         catch(err){

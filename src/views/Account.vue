@@ -3,6 +3,12 @@
         <Navbar />
         <Loader v-if="isLoading" />
         <div v-else class="col-sm-6 col-md-4 mx-auto my-5">
+            <div class="alert alert-danger" role="alert" v-if="error">
+                {{error}}
+            </div>
+            <div class="alert alert-success" v-if="success">
+                {{success}}
+            </div>
             <div class="form-group row">
                 <label class="col-sm-4 col-form-label">id:</label>
                 <div class="col-sm-8">
@@ -10,21 +16,27 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-4 col-form-label">Username:</label>
+                <label class="col-sm-4 col-form-label">Логин:</label>
                 <div class="col-sm-8">
                     <input class="form-control form-control-sm" type="text" v-model="user.username">
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-4 col-form-label">Password:</label>
+                <label class="col-sm-4 col-form-label">Пароль:</label>
                 <div class="col-sm-8">
                     <input class="form-control form-control-sm" type="password" v-model="user.password">
                 </div>
             </div>
             <div class="form-group row">
-                <label class="col-sm-4 col-form-label">Name:</label>
+                <label class="col-sm-4 col-form-label">Повторите пароль:</label>
                 <div class="col-sm-8">
-                    <input class="form-control form-control-sm" type="text" v-model="user.name">
+                    <input class="form-control form-control-sm" type="password" v-model="repeatedPassword">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-4 col-form-label">Имя:</label>
+                <div class="col-sm-8">
+                    <input class="form-control form-control-sm" type="text" v-model="user.name" disabled>
                 </div>
             </div>
             <div class="form-group row">
@@ -57,7 +69,8 @@ export default {
                 password: '',
                 name: '',
                 email: ''
-            },     
+            },
+            repeatedPassword: '',
             isLoading: false,
             success: null,
             error: null
@@ -87,15 +100,36 @@ export default {
             })       
         },
         saveUser(user){
-            this.$store.dispatch('users/updateUser', user)
-            .then((res)=>{
-                this.editMode = false;
-                this.success = res;
-                setTimeout(()=>{this.success = null},3000);
-            })
-            .catch(err=>{
-                this.error = err.message;
-            })
+            this.errors = [];
+            this.success = '';
+            if(this.checkFields()==true){
+                if(this.user.password == this.repeatedPassword){
+                    this.$store.dispatch('users/updateUser', user)
+                    .then(()=>{
+                        this.error = '';
+                        this.showSuccess("Сохранено. Перезайдите, чтобы изменения вступили в силу.")
+                    })
+                    .catch(err=>{
+                        this.error = err.message;
+                    })
+                }
+                else{
+                    this.error = "Пароли не совпадают";
+                }
+            }
+            else{
+                this.error = "Заполните пустые поля";
+            }
+        },
+        showSuccess(message){
+            this.success =  message;
+            setTimeout(()=>{this.success = null},8000);
+        },
+        checkFields(){
+            if(this.user.username != '' && this.user.email != ''){
+                return true;
+            }
+            return false;
         }
     }
 }

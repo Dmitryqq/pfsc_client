@@ -64,6 +64,15 @@ const router = new Router({
             requiresAuth: true,
             roles:['admin']
           }
+        },
+        {
+          path: 'marks',
+          name: 'marks',
+          component: () => import('./views/MarksShow.vue'),
+          meta: {
+            requiresAuth: true,
+            roles:['admin']
+          }
         }
       ]
       },
