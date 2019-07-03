@@ -47,11 +47,11 @@ const actions ={
     Auth(){
         return localStorage.getItem('token')?true:false;
     },
-    async getUsers({state}){
+    async getUsers({state,commit}){
         if(state.users.length<1) {
             try{ 
                 const response = await axios.get('/user')
-                state.users = response.data;
+                commit('setUsers',response.data);
             }
             catch(err) {
                 throw(err);
@@ -102,6 +102,9 @@ const actions ={
 }
 
 const mutations = {
+    setUsers(state, users){
+        state.users = users.sort((a,b)=> a.id-b.id);
+    },
     setUser(state, user){
         state.user = user;
     },

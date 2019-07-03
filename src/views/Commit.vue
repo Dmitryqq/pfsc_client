@@ -143,6 +143,7 @@ export default {
                     }
                 })
                 .catch(err => {
+                    this.error = err.message;
                 })
                 .finally(()=>{
                     this.isLoading = false;

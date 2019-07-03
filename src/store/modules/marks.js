@@ -5,7 +5,7 @@ const state = {
 }
 
 const actions = {
-    async getMarks({commit}){
+    async getMarks({state,commit}){
         if(state.marks.length<1) {
             try{
                 const response = await axios.get('/mark')
@@ -22,7 +22,7 @@ const actions = {
 
 const mutations = {
     setMarks(state, marks) {
-        state.marks = marks;
+        state.marks = marks.sort((a,b)=> a.id-b.id);
     }
 }
 

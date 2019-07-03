@@ -25,7 +25,7 @@ instance.interceptors.response.use( response => {
         else if (error.response.status === 404) {
         router.replace('/notfound');
         }
-        else if (error.response.status >= 500) {
+        else if (error.response.status === 500) {
         router.replace('/servererror');
         } 
         return Promise.reject(error.response);

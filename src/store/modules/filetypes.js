@@ -5,11 +5,11 @@ const state = {
 }
 
 const actions ={
-    async getTypeOfFiles({state}){
+    async getTypeOfFiles({state,commit}){
         if(state.typeOfFiles.length<1) {
             try{
                 const response = await axios.get('/typeOfFile')
-                state.typeOfFiles = response.data;
+                commit('setTypeOfFiles',response.data);
             }
             catch(err) {
                 throw(err);
@@ -50,6 +50,9 @@ const actions ={
 }
 
 const mutations = {
+    setTypeOfFiles(state, typeOfFiles){
+        state.typeOfFiles = typeOfFiles.sort((a,b)=>a.id - b.id)
+    },
     addTypeOfFile(state, typeOfFile) {
         state.typeOfFiles.push({
             id: typeOfFile.id,
