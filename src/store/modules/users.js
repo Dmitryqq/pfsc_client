@@ -1,5 +1,5 @@
-import axios from '../../axiosGeneral'
-import axiosInstance from '../../axiosInstance'
+import axios from '../../axios'
+import {secInstance} from '../../axios'
 import jwtDecode from 'jwt-decode'
 
 const state = {
@@ -10,7 +10,7 @@ const state = {
 const actions ={
     async authUser({dispatch}, authData){
         try{
-            const response = await axiosInstance.post(`/login`, authData)
+            const response = await secInstance.post(`/login`, authData)
             let token = response.headers['authorization'];
             if (token) {
                 const dtoken = jwtDecode(token);

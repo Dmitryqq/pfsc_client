@@ -1,5 +1,5 @@
-import axios from '../../axiosGeneral'
-import axiosInstance from '../../axiosInstance'
+import axios from '../../axios'
+import {secInstance} from '../../axios'
 
 const state = {
     commits: [],
@@ -24,7 +24,7 @@ const actions = {
     },
     async getCommit(_,id){
         try{
-            const response = await axiosInstance.get(`/commit/${id}`)
+            const response = await secInstance.get(`/commit/${id}`)
             return response.data;
         }
         catch(err) {
@@ -85,9 +85,10 @@ const actions = {
             throw(err)
         }
     },
-    async updateCommit(_,payload){
+    async updateCommit({commit},payload){
         try{
-            await axios.put('/commit/'+payload.id, payload)
+            const response = await axios.put('/commit/'+payload.id, payload)
+            commit('updateCommit',response.data);
         }
         catch(err) {
             throw(err)
@@ -151,6 +152,13 @@ const mutations = {
     addCommit(state, commit){
         if(state.commits.length > 0)
             state.commits.unshift(commit);
+    },
+    updateCommit(state, commit){
+        if(state.commits.length > 0){
+            const i = state.commits.findIndex(c=> c.id == commit.id);
+            if(i>=0)
+                state.commits[i]= commit;
+        }      
     }
 }
 
