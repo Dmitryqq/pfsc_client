@@ -25,7 +25,7 @@ instance.interceptors.response.use( response => {
       else if (error.response.status === 403) {
         router.replace('/forbidden');
       }
-      else if (error.response.status >= 500) {
+      else if (error.response.status === 500) {
         router.replace('/servererror');
       }
     if(error.response && error.response.data)

@@ -5,11 +5,11 @@ const state = {
 }
 
 const actions = {
-    async getConfigs({state}){
+    async getConfigs({state,commit}){
         if(state.configs.length<1) {
             try{
                 const response = await axios.get('/config')
-                state.configs = response.data;
+                commit('setConfigs',response.data);
             }
             catch(err) {
                 throw(err);
@@ -50,6 +50,9 @@ const actions = {
 }
 
 const mutations = {
+    setConfigs(state, configs){
+        state.configs = configs.sort((a,b)=>a.id - b.id)
+    },
     addConfig(state, config) {
         state.configs.push({
             id: config.id,
