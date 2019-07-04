@@ -47,6 +47,9 @@ const actions = {
     async clearSearchResults({commit}){
         commit('clearSearchResults');
     },
+    async changeStatus({commit},[commitId,status]){
+        commit('changeStatus',[commitId,status]);
+    },
     async addCommit({commit},payload){
         try{
             const response = await axios.post('/commit/', payload)
@@ -119,17 +122,19 @@ const actions = {
             throw(err)
         }
     },
-    async acceptCommit(_,id){
+    async acceptCommit({commit},id){
         try{
-            await axios.get(`/commit/${id}/accept`)
+            const response = await axios.get(`/commit/${id}/accept`)
+            commit('changeStatus',[response.data.commitId, response.data.activity]);
         }
         catch(err) {
             throw(err)
         }
     },
-    async rejectCommit(_,[id,text]){
+    async rejectCommit({commit},[id,text]){
         try{
-            await axios.post(`/commit/${id}/reject`, {text})
+            const response = await axios.post(`/commit/${id}/reject`, {text})
+            commit('changeStatus',[response.data.commitId, response.data.activity]);
         }
         catch(err) {
             throw(err)
@@ -159,6 +164,13 @@ const mutations = {
             if(i>=0)
                 state.commits[i]= commit;
         }      
+    },
+    changeStatus(state, [commitId,status]){
+        if(state.commits.length > 0){
+            const i = state.commits.findIndex(c=> c.id == commitId);
+            if(i>=0)
+                state.commits[i].status = status;
+        } 
     }
 }
 
