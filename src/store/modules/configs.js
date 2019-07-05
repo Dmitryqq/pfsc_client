@@ -1,4 +1,4 @@
-import axios from '../../axiosGeneral'
+import axios from '../../axios'
 
 const state = {
     configs: []

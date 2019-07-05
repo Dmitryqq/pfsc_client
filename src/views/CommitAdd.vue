@@ -13,7 +13,7 @@
                 <tr>
                     <th>Метка <span class="text-danger">*</span></th>
                     <td>
-                        <select class="form-control form-control-sm col-lg-6" v-model="commit.markId" :disabled="errors.length>0 && !toDeleteCommit">
+                        <select class="form-control form-control-sm col-lg-6" v-model="commit.markId" :disabled="errors.length>0 && toDeleteCommit == false">
                             <option v-for="mark in marks" :key="mark.id" :value="mark.id">{{mark.name}}</option>
                         </select>
                     </td>
@@ -21,7 +21,7 @@
                 <tr>
                     <th>Описание <span class="text-danger">*</span></th>
                     <td>
-                        <textarea class="form-control" cols="" rows="7" v-model="commit.description" :disabled="errors.length>0 && !toDeleteCommit"></textarea>
+                        <textarea class="form-control" cols="" rows="7" v-model="commit.description" :disabled="errors.length>0 && toDeleteCommit == false"></textarea>
                     </td>
                 </tr>               
             </table>
@@ -183,10 +183,11 @@ export default {
         },
         async send(){
             this.isLoading = true;
-            this.toDeleteCommit = false;
+            this.toDeleteCommit = null;
             this.errors = [];
             this.success = '';
             if(!this.validate()){
+                this.isLoading = false;
                 this.errors.push("Заполните все обязательные поля!");
                 return;
             }
@@ -219,6 +220,8 @@ export default {
                     this.clearData();
                     this.showSuccess("Накат успешно добавлен");
                 }
+                else
+                    this.toDeleteCommit = false
                 this.showFileNames = true;
                 
             })          
@@ -261,7 +264,7 @@ export default {
             errors: [],
             success: '',
             validFiles: {},
-            toDeleteCommit: false,
+            toDeleteCommit: null,
             isLoading: false
         }
     },

@@ -1,5 +1,5 @@
-import axios from '../../axiosGeneral'
-import axiosInstance from '../../axiosInstance'
+import axios from '../../axios'
+import {secInstance} from '../../axios'
 
 const state = {
     commits: [],
@@ -24,7 +24,7 @@ const actions = {
     },
     async getCommit(_,id){
         try{
-            const response = await axiosInstance.get(`/commit/${id}`)
+            const response = await secInstance.get(`/commit/${id}`)
             return response.data;
         }
         catch(err) {
@@ -46,6 +46,9 @@ const actions = {
     },
     async clearSearchResults({commit}){
         commit('clearSearchResults');
+    },
+    async changeStatus({commit},[commitId,status]){
+        commit('changeStatus',[commitId,status]);
     },
     async addCommit({commit},payload){
         try{
@@ -85,9 +88,10 @@ const actions = {
             throw(err)
         }
     },
-    async updateCommit(_,payload){
+    async updateCommit({commit},payload){
         try{
-            await axios.put('/commit/'+payload.id, payload)
+            const response = await axios.put('/commit/'+payload.id, payload)
+            commit('updateCommit',response.data);
         }
         catch(err) {
             throw(err)
@@ -118,17 +122,19 @@ const actions = {
             throw(err)
         }
     },
-    async acceptCommit(_,id){
+    async acceptCommit({commit},id){
         try{
-            await axios.get(`/commit/${id}/accept`)
+            const response = await axios.get(`/commit/${id}/accept`)
+            commit('changeStatus',[response.data.commitId, response.data.activity]);
         }
         catch(err) {
             throw(err)
         }
     },
-    async rejectCommit(_,[id,text]){
+    async rejectCommit({commit},[id,text]){
         try{
-            await axios.post(`/commit/${id}/reject`, {text})
+            const response = await axios.post(`/commit/${id}/reject`, {text})
+            commit('changeStatus',[response.data.commitId, response.data.activity]);
         }
         catch(err) {
             throw(err)
@@ -151,6 +157,20 @@ const mutations = {
     addCommit(state, commit){
         if(state.commits.length > 0)
             state.commits.unshift(commit);
+    },
+    updateCommit(state, commit){
+        if(state.commits.length > 0){
+            const i = state.commits.findIndex(c=> c.id == commit.id);
+            if(i>=0)
+                state.commits[i]= commit;
+        }      
+    },
+    changeStatus(state, [commitId,status]){
+        if(state.commits.length > 0){
+            const i = state.commits.findIndex(c=> c.id == commitId);
+            if(i>=0)
+                state.commits[i].status = status;
+        } 
     }
 }
 

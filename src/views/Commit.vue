@@ -141,6 +141,7 @@ export default {
                         this.newCommit.description = this.commit.description;
                         this.newCommit.markId = this.commit.markId;
                     }
+                    this.$store.dispatch('commits/changeStatus', [this.commit.id, this.commit.status]);
                 })
                 .catch(err => {
                     this.error = err.message;
@@ -181,13 +182,13 @@ export default {
                 selectedFiles.push(event.target.files[i]);
             this.sendFiles(this.commit.fileTypes[index].id, selectedFiles)
             .then(()=>{
-                this.getCommit();
                 this.showSuccess('Файл(ы) успешно добавлен(ы)');
             })
-            .catch(err=>{
+            .catch(err=>{              
                 this.error = err.message;
             }) 
             .finally(()=>{
+                this.getCommit();
                 this.isLoading = false;
             })         
         },
@@ -225,6 +226,7 @@ export default {
                     this.showSuccess('Файл успешно удален');
                 })
                 .catch(err=> {
+                    this.getCommit();                   
                     this.error = err.message;
                 })
                 .finally(()=>{
@@ -242,6 +244,7 @@ export default {
                             this.showSuccess('Накат успешно обновлен');
                         })
                         .catch(err=> {
+                            this.getCommit();
                             this.error = err.message;
                         })
                         .finally(()=>{
