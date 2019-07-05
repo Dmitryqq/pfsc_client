@@ -53,15 +53,25 @@ export default {
             }
         },
         auth(){
-            this.$store.dispatch('users/authUser',this.user)
-            .then(()=>{
-                this.$router.replace({path: this.$route.query.redirect || '/'})
-            })
-            .catch(err=>{
-                this.error = err.message;
+            this.user.username = this.user.username.trim();
+            if (this.user.username.indexOf(' ') > -1)
+            {
+                this.error = "Пробелы в логине недопустимы";
                 this.user.username = '';
                 this.user.password = '';
-            })
+            }
+            else{
+                this.user.username = this.user.username.toLowerCase();
+                this.$store.dispatch('users/authUser',this.user)
+                .then(()=>{
+                    this.$router.replace({path: this.$route.query.redirect || '/'})
+                })
+                .catch(err=>{
+                    this.error = err.message;
+                    this.user.username = '';
+                    this.user.password = '';
+                })
+            }
         }
     }
 }

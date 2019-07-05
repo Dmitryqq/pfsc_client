@@ -81,7 +81,8 @@
                     </td>   
                 </tr>
             </table>
-            <p class="text-center">Если изменение пароля не требуется, то при изменении оставьте поле пустым</p>
+            <p class="text-center">Если изменение пароля не требуется, то при изменении оставьте поле пустым<br>
+            Логин пользователя должен быть уникален</p>
         </div>
     </div>
 </template>
@@ -169,14 +170,25 @@ export default {
             this.error = null;
             if(this.user.username.length>0 && this.user.password.length>0 && this.user.name.length>0 && this.user.email.length>0
             && this.user.roleId!=0 ) {
+                this.user.username = this.user.username.trim();
+                if (this.user.username.indexOf(' ') > -1){
+                    this.error = "Пробелы в логине недопустимы";
+                }
+                else{
+                    this.user.username = this.user.username.toLowerCase();
                     this.$store.dispatch('users/addUser',  this.user)
                     .then(()=>{ 
                     this.showSuccess('Пользователь успешно добавлен');
                     this.clearForm()
+                    this.setDefaultPassword();
                 })
                 .catch((err)=>{
                     this.error=err.message
                 })
+                }
+            }
+            else{
+                this.error = "Заполните все поля"
             }
         },
         deleteUser(user){
@@ -192,16 +204,30 @@ export default {
             }
         },
         updateUser(user){
-            if(confirm("Подтвердите обновление пользователя '" + user.username + "'")){
-                this.$store.dispatch('users/updateUser', user)
-                .then(()=>{
-                    this.showSuccess('Пользователь успешно обновлен');
-                })
-                .catch(err=>{
-                    this.error = err.message;
-                })
+            this.error = null;
+            if(user.username.length>0  && user.name.length>0 && user.email.length>0 && user.roleId!=0 ) {
+                user.username = user.username.trim();
+                if (user.username.indexOf(' ') > -1){
+                    this.error = "Пробелы в логине недопустимы";
+                }
+                else{
+                    user.username = user.username.toLowerCase();
+                    if(confirm("Подтвердите обновление пользователя '" + user.username + "'")){
+                        this.$store.dispatch('users/updateUser', user)
+                        .then(()=>{
+                            this.error = null;
+                            this.showSuccess('Пользователь успешно обновлен');
+                            this.editMode = false;
+                        })
+                        .catch(err=>{
+                            this.error = err.message;
+                        })
+                    }
+                }
             }
-            this.editMode = false;
+            else{
+                this.error = "Заполните все поля"
+            }
         },
         clearForm(){
             this.user.username = '';
@@ -217,6 +243,8 @@ export default {
             this.selectedUser.id = user.id;
         },
         disableEditMode(){
+            this.$store.state.users.users = [];
+            this.getUsers()
             this.editMode = false;
         },
         showSuccess(message){
